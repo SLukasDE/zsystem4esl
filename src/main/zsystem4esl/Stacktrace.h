@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@ SOFTWARE.
 #define ZSYSTEM4ESL_STACKTRACE_H_
 
 #include <esl/stacktrace/Interface.h>
-#include <esl/logging/Logger.h>
-#include <esl/logging/Level.h>
+#include <esl/logging/Location.h>
+#include <esl/logging/StreamReal.h>
 #include <zsystem/Backtrace.h>
 #include <ostream>
 #include <vector>
@@ -38,8 +38,8 @@ public:
 	Stacktrace() = default;
 	~Stacktrace() = default;
 
-	void dump(std::ostream& oStream) const override;
-	void dump(esl::logging::Logger& logger, esl::logging::Level level = esl::logging::Level::ERROR) const override;
+	void dump(std::ostream& stream) const override;
+	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
 	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
 
 private:

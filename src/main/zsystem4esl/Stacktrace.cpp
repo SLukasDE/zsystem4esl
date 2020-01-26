@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,42 +24,18 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-namespace {
-
-template<typename T>
-void genericDump(T& t, const zsystem::Backtrace& backtrace) {
-	t << "\nStacktrace:\n";
+void Stacktrace::dump(std::ostream& stream) const {
+	stream << "Stacktrace:\n";
 	for (const auto& entry : backtrace.getElements()) {
-		t << entry << "\n";
+		stream << entry << "\n";
 	}
 }
 
-} /* anonymous namespace */
 
-void Stacktrace::dump(std::ostream& oStream) const {
-    genericDump(oStream, backtrace);
-}
-
-
-void Stacktrace::dump(esl::logging::Logger& logger, esl::logging::Level level) const {
-	switch(level) {
-	case esl::logging::Level::TRACE:
-		genericDump(logger.trace, backtrace);
-		break;
-	case esl::logging::Level::DEBUG:
-		genericDump(logger.debug, backtrace);
-		break;
-	case esl::logging::Level::INFO:
-		genericDump(logger.info, backtrace);
-		break;
-	case esl::logging::Level::WARN:
-		genericDump(logger.warn, backtrace);
-		break;
-	case esl::logging::Level::ERROR:
-		genericDump(logger.error, backtrace);
-		break;
-	default: /* logging::Level::SILENT */
-		break;
+void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
+	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
+	for (const auto& entry : backtrace.getElements()) {
+		stream(location.object, location.function, location.file, location.line) << entry << "\n";
 	}
 }
 

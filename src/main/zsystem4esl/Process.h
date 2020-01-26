@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +61,7 @@ public:
     unsigned int getTimeSysMS() const override;
 
 private:
-    ::zsystem::Process process;
+    zsystem::Process process;
 /*
     std::unique_ptr<zsystem4esl::Output> outErr;
     std::unique_ptr<zsystem4esl::Output> err;

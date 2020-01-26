@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,27 +28,25 @@ SOFTWARE.
 
 #include <esl/system/Interface.h>
 #include <esl/stacktrace/Interface.h>
-#include <esl/bootstrap/Interface.h>
+#include <esl/module/Interface.h>
+
+#include <memory>
 #include <new>         // placement new
 #include <type_traits> // aligned_storage
 
 namespace zsystem4esl {
 
 namespace {
-class Module : public esl::bootstrap::Module {
+
+class Module : public esl::module::Module {
 public:
-	Module() = default;
-	~Module() = default;
-
-	static void initialize();
-
-private:
-	esl::system::Interface interfaceEslSystem;
-	esl::stacktrace::Interface interfaceEslStacktrace;
+	Module();
 };
 
 typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
 Module& module = reinterpret_cast<Module&> (moduleBuffer);
+bool isInitialized = false;
+//Module module;
 
 esl::system::Interface::Process* createProcess() {
 	return new Process;
@@ -70,33 +68,32 @@ esl::stacktrace::Interface::Stacktrace* createStacktrace() {
 	return new Stacktrace;
 }
 
-void Module::initialize() {
-	static bool isInitialized = false;
+Module::Module()
+: esl::module::Module()
+{
+	esl::module::Module::initialize(*this);
 
+	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::system::Interface(
+			getId(), "",
+			&createProcess,
+			&createOutputDefault, &createOutputPipe, &createOutputFile,
+			&signalHandlerInstall, &signalHandlerRemove)));
+	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::stacktrace::Interface(
+			getId(), "",
+			&createStacktrace)));
+}
+
+} /* anonymous namespace */
+
+const esl::module::Module& getModule() {
 	if(isInitialized == false) {
-		isInitialized = true;
-
 		/* ***************** *
 		 * initialize module *
 		 * ***************** */
+
+		isInitialized = true;
 		new (&module) Module(); // placement new
-		esl::bootstrap::Module::initialize(module);
-
-		esl::system::Interface::initialize(module.interfaceEslSystem,
-				&createProcess,
-				&createOutputDefault, &createOutputPipe, &createOutputFile,
-				&signalHandlerInstall, &signalHandlerRemove);
-		module.interfacesProvided.next = &module.interfaceEslSystem;
-
-		esl::stacktrace::Interface::initialize(module.interfaceEslStacktrace,
-				&createStacktrace);
-		module.interfaceEslSystem.next = &module.interfaceEslStacktrace;
 	}
-}
-}
-
-const esl::bootstrap::Module& getModule() {
-	Module::initialize();
 	return module;
 }
 

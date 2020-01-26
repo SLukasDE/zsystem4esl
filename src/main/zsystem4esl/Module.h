@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,11 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_MODULE_H_
 #define ZSYSTEM4ESL_MODULE_H_
 
-#include <esl/bootstrap/Module.h>
+#include <esl/module/Module.h>
 
 namespace zsystem4esl {
 
-const esl::bootstrap::Module& getModule();
+const esl::module::Module& getModule();
 
 } /* namespace zsystem4esl */
 
