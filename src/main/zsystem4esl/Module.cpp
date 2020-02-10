@@ -74,12 +74,12 @@ Module::Module()
 	esl::module::Module::initialize(*this);
 
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::system::Interface(
-			getId(), "",
+			getId(), "zsystem",
 			&createProcess,
 			&createOutputDefault, &createOutputPipe, &createOutputFile,
 			&signalHandlerInstall, &signalHandlerRemove)));
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::stacktrace::Interface(
-			getId(), "",
+			getId(), "zsystem",
 			&createStacktrace)));
 }
 
