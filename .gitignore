@@ -1,10 +1,14 @@
 # build directory
 build
 
-# # eclipse files
+# eclipse files
 .project
 .cproject
 .settings
+
+# other files
+build.sh
+
 
 # Prerequisites
 *.d
