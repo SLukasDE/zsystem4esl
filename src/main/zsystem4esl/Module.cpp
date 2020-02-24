@@ -85,7 +85,7 @@ Module::Module()
 
 } /* anonymous namespace */
 
-const esl::module::Module& getModule() {
+esl::module::Module& getModule() {
 	if(isInitialized == false) {
 		/* ***************** *
 		 * initialize module *
