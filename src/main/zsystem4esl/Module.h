@@ -27,7 +27,7 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-const esl::module::Module& getModule();
+esl::module::Module& getModule();
 
 } /* namespace zsystem4esl */
 
