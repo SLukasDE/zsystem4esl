@@ -24,10 +24,12 @@ SOFTWARE.
 #define ZSYSTEM4ESL_MODULE_H_
 
 #include <esl/module/Module.h>
+#include <string>
 
 namespace zsystem4esl {
 
-esl::module::Module& getModule();
+esl::module::Module* getModulePointer(const std::string& moduleName = "");
+esl::module::Module& getModule(const std::string& moduleName = "");
 
 } /* namespace zsystem4esl */
 
