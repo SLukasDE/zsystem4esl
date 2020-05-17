@@ -28,8 +28,7 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-esl::module::Module* getModulePointer(const std::string& moduleName = "");
-esl::module::Module& getModule(const std::string& moduleName = "");
+esl::module::Module& getModule();
 
 } /* namespace zsystem4esl */
 
