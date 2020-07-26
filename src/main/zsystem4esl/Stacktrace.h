@@ -23,18 +23,23 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_STACKTRACE_H_
 #define ZSYSTEM4ESL_STACKTRACE_H_
 
+#include <zsystem/Backtrace.h>
+
 #include <esl/stacktrace/Interface.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
-#include <zsystem/Backtrace.h>
+
 #include <ostream>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace zsystem4esl {
 
 class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
 public:
+	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create();
+
 	Stacktrace() = default;
 	~Stacktrace() = default;
 

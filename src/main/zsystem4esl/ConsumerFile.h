@@ -20,31 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#ifndef ZSYSTEM4ESL_CONSUMERFILE_H_
+#define ZSYSTEM4ESL_CONSUMERFILE_H_
+
+#include <esl/system/Interface.h>
+#include <esl/object/Values.h>
+
+#include <zsystem/process/ConsumerFile.h>
+
+#include <string>
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
-}
+class ConsumerFile : public esl::system::Interface::Consumer {
+public:
+	static std::unique_ptr<esl::system::Interface::Consumer> create(std::string filename, const esl::object::Values<std::string>& values);
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
-}
+	ConsumerFile(std::string filename, const esl::object::Values<std::string>& values);
 
+	std::size_t read(esl::system::Interface::FileDescriptor& fileDescriptor) override;
+	//esl::system::Interface::FileDescriptor::Handle getFileDescriptorHandle() override;
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
-}
+	zsystem::process::ConsumerFile& getConsumerFile();
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
-}
+private:
+	zsystem::process::ConsumerFile consumerFile;
+};
 
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_CONSUMERFILE_H_ */

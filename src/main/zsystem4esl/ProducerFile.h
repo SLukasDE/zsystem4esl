@@ -20,31 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#ifndef ZSYSTEM4ESL_PRODUCERFILE_H_
+#define ZSYSTEM4ESL_PRODUCERFILE_H_
+
+#include <esl/system/Interface.h>
+#include <esl/object/Values.h>
+
+#include <zsystem/process/ProducerFile.h>
+
+#include <string>
+#include <memory>
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
-}
+class ProducerFile : public esl::system::Interface::ProducerFile {
+public:
+	static std::unique_ptr<esl::system::Interface::ProducerFile> create(std::string filename, const esl::object::Values<std::string>& values);
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
-}
+	ProducerFile(std::string filename, const esl::object::Values<std::string>& values);
 
+	/* return: FileDescriptor::npos
+	 *           if there is no more data to produce (IMPORTANT)
+	 *
+	 *         Number of characters written to fileDescriptor
+	 *           if there are data available to write to fileDescripor
+	 *           (produced now or queued from previous call). */
+	std::size_t write(esl::system::Interface::FileDescriptor& fileDescriptor) override;
+	std::size_t getFileSize() const override;
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
-}
+	zsystem::process::ProducerFile& getProducerFile();
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
-}
+private:
+	zsystem::process::ProducerFile producerFile;
+};
 
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_PRODUCERFILE_H_ */

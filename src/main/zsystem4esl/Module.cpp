@@ -22,7 +22,8 @@ SOFTWARE.
 
 #include <zsystem4esl/Module.h>
 #include <zsystem4esl/Process.h>
-#include <zsystem4esl/Output.h>
+#include <zsystem4esl/ConsumerFile.h>
+#include <zsystem4esl/ProducerFile.h>
 #include <zsystem4esl/SignalHandler.h>
 #include <zsystem4esl/Stacktrace.h>
 
@@ -48,24 +49,8 @@ public:
 typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
 Module* modulePtr = nullptr;
 
-esl::system::Interface::Process* createProcess() {
-	return new Process;
-}
-
-esl::system::Interface::Process::Output* createOutputDefault() {
-	return new OutputDefault();
-}
-
-esl::system::Interface::Process::Output* createOutputFile(const std::string& filename) {
-	return new OutputFile(filename);
-}
-
-esl::system::Interface::Process::Output* createOutputPipe() {
-	return new OutputPipe();
-}
-
-esl::stacktrace::Interface::Stacktrace* createStacktrace() {
-	return new Stacktrace;
+const char* getImplementation() {
+	return "zsystem4esl";
 }
 
 Module::Module()
@@ -74,13 +59,13 @@ Module::Module()
 	esl::module::Module::initialize(*this);
 
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::system::Interface(
-			getId(), "zsystem4esl",
-			&createProcess,
-			&createOutputDefault, &createOutputPipe, &createOutputFile,
+			getId(), getImplementation(),
+			&Process::create, &Process::createWithEnvironment,
+			&ConsumerFile::create, &ProducerFile::create,
 			&signalHandlerInstall, &signalHandlerRemove)));
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::stacktrace::Interface(
-			getId(), "zsystem4esl",
-			&createStacktrace)));
+			getId(), getImplementation(),
+			&Stacktrace::create)));
 }
 
 } /* anonymous namespace */

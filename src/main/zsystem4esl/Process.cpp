@@ -21,108 +21,74 @@ SOFTWARE.
 */
 
 #include <zsystem4esl/Process.h>
-#include <zsystem4esl/Output.h>
+#include <zsystem4esl/Consumer.h>
+#include <zsystem4esl/ConsumerFile.h>
+#include <zsystem4esl/Producer.h>
+#include <zsystem4esl/ProducerFile.h>
+
+#include <zsystem/process/Arguments.h>
+#include <zsystem/process/Environment.h>
+#include <zsystem/process/Consumer.h>
+#include <zsystem/process/Producer.h>
+
 #include <esl/logging/Logger.h>
 #include <esl/Stacktrace.h>
 
+#include <map>
+#include <memory>
+
 namespace zsystem4esl {
-namespace {
-zsystem::Process::Output* getZsystemProcessOutput(esl::system::Interface::Process::Output* output) {
-	if(output) {
-		zsystem4esl::Output* zsystem4eslOutput = dynamic_cast<zsystem4esl::Output*>(output);
-		if(zsystem4eslOutput == nullptr) {
-			throw esl::addStacktrace(std::runtime_error("output object is not type of \"zsystem4esl::Output\""));
+
+std::unique_ptr<esl::system::Interface::Process> Process::create(esl::system::process::Arguments arguments, std::string workingDir) {
+	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(workingDir)));
+}
+
+std::unique_ptr<esl::system::Interface::Process> Process::createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir) {
+	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(environment), std::move(workingDir)));
+}
+
+Process::Process(esl::system::process::Arguments arguments, std::string workingDir)
+: process(zsystem::process::Arguments(arguments.getArgs()), std::move(workingDir))
+{ }
+
+Process::Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir)
+: process(zsystem::process::Arguments(arguments.getArgs()), zsystem::process::Environment(environment.getValues()), std::move(workingDir))
+{ }
+
+int Process::execute(const esl::system::Interface::Process::ParameterStreams& aParameterStreams, esl::system::Interface::Process::ParameterFeatures& aParameterFeatures) {
+	zsystem::Process::ParameterStreams parameterStreams;
+	zsystem::Process::ParameterFeatures parameterFeatures;
+
+	std::map<esl::system::Interface::Consumer*, std::unique_ptr<zsystem::process::Consumer>> consumers;
+	std::map<esl::system::Interface::Producer*, std::unique_ptr<zsystem::process::Producer>> producers;
+
+	for(auto& parameterStream : aParameterStreams) {
+		std::unique_ptr<zsystem::process::Consumer>& consumer = consumers[parameterStream.second.consumer];
+		ConsumerFile* consumerFile = nullptr;
+
+		if(parameterStream.second.consumer) {
+			consumerFile = dynamic_cast<ConsumerFile*>(parameterStream.second.consumer);
+			if(!consumerFile && !consumer) {
+				consumer.reset(new Consumer(*parameterStream.second.consumer));
+			}
 		}
-		return &zsystem4eslOutput->output;
-	}
-	return nullptr;
-}
-}
 
-void Process::enableTimeMeasurement(bool enabled) {
-	process.enableTimeMeasurement(enabled);
-}
+		std::unique_ptr<zsystem::process::Producer>& producer = producers[parameterStream.second.producer];
+		ProducerFile* producerFile = nullptr;
 
-void Process::setWorkingDirectory(const std::string& workingDirectory) {
-	process.setWorkingDirectory(workingDirectory);
-}
-
-void Process::setStdOut(esl::system::Interface::Process::Output* output) {
-	process.setStdOut(getZsystemProcessOutput(output));
-}
-
-void Process::setStdErr(esl::system::Interface::Process::Output* output) {
-	process.setStdErr(getZsystemProcessOutput(output));
-}
-/*
-void Process::setOutput(std::unique_ptr<esl::system::Interface::Process::Output> output, bool stdOut, bool stdErr) {
-	zsystem4esl::Output* outputPtr = nullptr;
-	if(output) {
-		outputPtr = dynamic_cast<zsystem4esl::Output*>(output.get());
-		if(outputPtr == nullptr) {
-			throw esl::addStacktrace(std::runtime_error("object is not type of \"esl::zsystem::Output\""));
+		if(parameterStream.second.producer) {
+			producerFile = dynamic_cast<ProducerFile*>(parameterStream.second.producer);
+			if(!producerFile && !producer) {
+				producer.reset(new Producer(*parameterStream.second.producer));
+			}
 		}
-		output.release();
-	}
 
-	if(stdOut) {
-		// if previous output was specified for stdErr and stdErr,
-		// then we have do move "outErr" to "err"
-		if(outPtr == errPtr) {
-			err = std::move(outErr);
-		}
-		outErr.reset(outputPtr);
-
-		outPtr = outputPtr;
-
-		if(stdErr) {
-			errPtr = outputPtr;
-		}
-	}
-	else if(stdErr) {
-		err.reset(outputPtr);
-		errPtr = outputPtr;
+		zsystem::Process::ParameterStream& zParameterStream = parameterStreams[parameterStream.first];
+		zParameterStream.consumer = consumerFile ? &consumerFile->getConsumerFile() : consumer.get();
+		zParameterStream.producer = producerFile ? &producerFile->getProducerFile() : producer.get();
 	}
 
-	process.setStdOut(outPtr ? &outPtr->output : nullptr);
-	process.setStdErr(errPtr ? &errPtr->output : nullptr);
-}
-
-esl::system::Interface::Process::Output* Process::getStdOut() const {
-	return outPtr;
-}
-
-esl::system::Interface::Process::Output* Process::getStdErr() const {
-	return errPtr;
-}
-*/
-/* return true on success */
-bool Process::execute(const std::string& executable, const std::list<std::string>& arguments) {
-	return process.execute(executable, arguments);
-}
-
-int Process::wait() {
-	return process.wait();
-}
-
-bool Process::isRunning() {
-	return process.isRunning();
-}
-
-bool Process::isFailed() {
-	return process.isFailed();
-}
-
-unsigned int Process::getTimeRealMS() const {
-	return process.getTimeRealMS();
-}
-
-unsigned int Process::getTimeUserMS() const {
-	return process.getTimeUserMS();
-}
-
-unsigned int Process::getTimeSysMS() const {
-	return process.getTimeSysMS();
+	return process.execute(parameterStreams, parameterFeatures);
 }
 
 } /* namespace zsystem4esl */

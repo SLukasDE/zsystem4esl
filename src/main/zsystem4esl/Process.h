@@ -24,10 +24,12 @@ SOFTWARE.
 #define ZSYSTEM4ESL_PROCESS_H_
 
 #include <esl/system/Interface.h>
+#include <esl/system/process/Arguments.h>
+#include <esl/system/process/Environment.h>
+
 #include <zsystem/Process.h>
+
 #include <string>
-#include <list>
-#include <unistd.h>
 #include <memory>
 
 namespace zsystem4esl {
@@ -36,39 +38,16 @@ class Output;
 
 class Process : public esl::system::Interface::Process {
 public:
-    Process() = default;
-    ~Process() = default;
+	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::process::Arguments arguments, std::string workingDir);
+	static std::unique_ptr<esl::system::Interface::Process> createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
 
-    void enableTimeMeasurement(bool enabled) override;
-    void setWorkingDirectory(const std::string& workingDirectory) override;
+	Process(esl::system::process::Arguments arguments, std::string workingDir);
+	Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
 
-    //void setOutput(std::unique_ptr<esl::system::Interface::Process::Output> output, bool stdOut, bool stdErr) override;
-    void setStdOut(esl::system::Interface::Process::Output* output) override;
-    //esl::system::Interface::Process::Output* getStdOut() const override;
-
-    void setStdErr(esl::system::Interface::Process::Output* output) override;
-    //esl::system::Interface::Process::Output* getStdErr() const override;
-
-    /* return true on success */
-    bool execute(const std::string& executable, const std::list<std::string>& arguments) override;
-
-    int wait() override;
-    bool isRunning() override;
-    bool isFailed() override;
-
-    unsigned int getTimeRealMS() const override;
-    unsigned int getTimeUserMS() const override;
-    unsigned int getTimeSysMS() const override;
+	int execute(const esl::system::Interface::Process::ParameterStreams& parameterStreams, esl::system::Interface::Process::ParameterFeatures& parameterFeatures) override;
 
 private:
     zsystem::Process process;
-/*
-    std::unique_ptr<zsystem4esl::Output> outErr;
-    std::unique_ptr<zsystem4esl::Output> err;
-
-    zsystem4esl::Output* outPtr = nullptr;
-    zsystem4esl::Output* errPtr = nullptr;
-*/
 };
 
 } /* namespace zsystem4esl */

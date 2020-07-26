@@ -20,31 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#include <zsystem4esl/ProducerFile.h>
+#include <zsystem4esl/FileDescriptor.h>
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
+std::unique_ptr<esl::system::Interface::ProducerFile> ProducerFile::create(std::string filename, const esl::object::Values<std::string>& values) {
+	return std::unique_ptr<esl::system::Interface::ProducerFile>(new ProducerFile(std::move(filename), values));
 }
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
+ProducerFile::ProducerFile(std::string filename, const esl::object::Values<std::string>& values)
+: producerFile(FileDescriptor::getFileDescriptor(std::move(filename), true, false, false, values))
+{ }
+
+std::size_t ProducerFile::write(esl::system::Interface::FileDescriptor& aFileDescriptor) {
+//	FileDescriptor fileDescriptor(aFileDescriptor);
+//	return producerFile.write(fileDescriptor);
+	return esl::system::Interface::FileDescriptor::npos;
 }
 
-
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
+std::size_t ProducerFile::getFileSize() const {
+	return producerFile.getFileSize();
 }
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
+zsystem::process::ProducerFile& ProducerFile::getProducerFile() {
+	return producerFile;
 }
 
 } /* namespace zsystem4esl */

@@ -20,66 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_OUTPUT_H_
-#define ZSYSTEM4ESL_OUTPUT_H_
-
-#include <esl/system/Interface.h>
-#include <zsystem/Process.h>
+#include <zsystem4esl/ConsumerFile.h>
+#include <zsystem4esl/FileDescriptor.h>
 
 namespace zsystem4esl {
 
-class Process;
+std::unique_ptr<esl::system::Interface::Consumer> ConsumerFile::create(std::string filename, const esl::object::Values<std::string>& values) {
+	return std::unique_ptr<esl::system::Interface::Consumer>(new ConsumerFile(std::move(filename), values));
+}
 
-class Output : public esl::system::Interface::Process::Output {
-public:
-	Output(zsystem::Process::Output &aOutput)
-    : esl::system::Interface::Process::Output(),
-	  output(aOutput)
-    { }
-	~Output() = default;
+ConsumerFile::ConsumerFile(std::string filename, const esl::object::Values<std::string>& values)
+: consumerFile(FileDescriptor::getFileDescriptor(std::move(filename), false, true, true, values))
+{ }
 
-	std::size_t read(void* buffer, std::size_t s) override {
-		return output.read(buffer, s);
-	}
-
-	bool setBlocking(bool blocking) override {
-		return output.setBlocking(blocking);
-	}
-
-	zsystem::Process::Output &output;
-};
-
-class OutputDefault : public Output {
-public:
-	OutputDefault()
-    : Output(output)
-    { }
-	~OutputDefault() = default;
-
-	zsystem::Process::Default output;
-};
-
-class OutputPipe : public Output {
-public:
-	OutputPipe()
-    : Output(output)
-    { }
-	~OutputPipe() = default;
-
-	zsystem::Process::Pipe output;
-};
-
-class OutputFile : public Output {
-public:
-	OutputFile(const std::string& filename)
-    : Output(output),
-	  output(filename)
-    { }
-	~OutputFile() = default;
-
-	zsystem::Process::File output;
-};
+std::size_t ConsumerFile::read(esl::system::Interface::FileDescriptor& fileDescriptor) {
+	return esl::system::Interface::FileDescriptor::npos;
+}
+/*
+esl::system::Interface::FileDescriptor::Handle ConsumerFile::getFileDescriptorHandle() {
+	return consumerFile.getFileDescriptor().getHandle();
+}
+*/
+zsystem::process::ConsumerFile& ConsumerFile::getConsumerFile() {
+	return consumerFile;
+}
 
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_OUTPUT_H_ */

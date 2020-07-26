@@ -20,31 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#include <zsystem4esl/Producer.h>
+#include <zsystem4esl/FileDescriptor.h>
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
-}
+Producer::Producer(esl::system::Interface::Producer& aProducer)
+: producer(aProducer)
+{ }
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
-}
-
-
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
-}
-
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
+std::size_t Producer::write(zsystem::process::FileDescriptor& aFileDescriptor) {
+	FileDescriptor fileDescriptor(aFileDescriptor);
+	return producer.write(fileDescriptor);
 }
 
 } /* namespace zsystem4esl */

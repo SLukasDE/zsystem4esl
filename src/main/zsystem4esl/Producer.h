@@ -20,31 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#ifndef ZSYSTEM4ESL_PRODUCER_H_
+#define ZSYSTEM4ESL_PRODUCER_H_
+
+#include <esl/system/Interface.h>
+
+#include <zsystem/process/Producer.h>
+#include <zsystem/process/FileDescriptor.h>
+
+#include <string>
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
-}
+class Producer : public zsystem::process::Producer {
+public:
+	Producer(esl::system::Interface::Producer& producer);
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
-}
+	std::size_t write(zsystem::process::FileDescriptor& fileDescriptor) override;
 
-
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
-}
-
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
-}
+private:
+	esl::system::Interface::Producer& producer;
+};
 
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_PRODUCER_H_ */

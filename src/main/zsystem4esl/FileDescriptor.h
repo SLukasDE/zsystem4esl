@@ -20,31 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#ifndef ZSYSTEM4ESL_FILEDESCRIPTOR_H_
+#define ZSYSTEM4ESL_FILEDESCRIPTOR_H_
+
+#include <esl/system/Interface.h>
+#include <esl/object/Values.h>
+
+#include <zsystem/process/FileDescriptor.h>
+
+#include <string>
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
-}
+class FileDescriptor : public esl::system::Interface::FileDescriptor {
+public:
+	static zsystem::process::FileDescriptor getFileDescriptor(std::string filename, bool isRead, bool isWrite, bool doOverwrite, const esl::object::Values<std::string>& values);
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
-}
+	FileDescriptor(zsystem::process::FileDescriptor& fileDescriptor);
 
+	std::size_t read(void* data, std::size_t size) override;
+	std::size_t write(const void* data, std::size_t size) override;
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
-}
-
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
-}
+private:
+	zsystem::process::FileDescriptor& fileDescriptor;
+};
 
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_FILEDESCRIPTOR_H_ */
