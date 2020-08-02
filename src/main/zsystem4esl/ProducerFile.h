@@ -35,9 +35,9 @@ namespace zsystem4esl {
 
 class ProducerFile : public esl::system::Interface::ProducerFile {
 public:
-	static std::unique_ptr<esl::system::Interface::ProducerFile> create(std::string filename, const esl::object::Values<std::string>& values);
+	static std::unique_ptr<esl::system::Interface::ProducerFile> create(std::string filename, const esl::object::Values<std::string>& settings);
 
-	ProducerFile(std::string filename, const esl::object::Values<std::string>& values);
+	ProducerFile(std::string filename, const esl::object::Values<std::string>& settings);
 
 	/* return: FileDescriptor::npos
 	 *           if there is no more data to produce (IMPORTANT)

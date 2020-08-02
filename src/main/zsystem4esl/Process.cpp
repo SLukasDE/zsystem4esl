@@ -39,11 +39,11 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::system::Interface::Process> Process::create(esl::system::process::Arguments arguments, std::string workingDir) {
+std::unique_ptr<esl::system::Interface::Process> Process::create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>&) {
 	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(workingDir)));
 }
 
-std::unique_ptr<esl::system::Interface::Process> Process::createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir) {
+std::unique_ptr<esl::system::Interface::Process> Process::createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir, const esl::object::Values<std::string>&) {
 	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(environment), std::move(workingDir)));
 }
 

@@ -34,9 +34,9 @@ namespace zsystem4esl {
 
 class ConsumerFile : public esl::system::Interface::Consumer {
 public:
-	static std::unique_ptr<esl::system::Interface::Consumer> create(std::string filename, const esl::object::Values<std::string>& values);
+	static std::unique_ptr<esl::system::Interface::Consumer> create(std::string filename, const esl::object::Values<std::string>& settings);
 
-	ConsumerFile(std::string filename, const esl::object::Values<std::string>& values);
+	ConsumerFile(std::string filename, const esl::object::Values<std::string>& settings);
 
 	std::size_t read(esl::system::Interface::FileDescriptor& fileDescriptor) override;
 	//esl::system::Interface::FileDescriptor::Handle getFileDescriptorHandle() override;

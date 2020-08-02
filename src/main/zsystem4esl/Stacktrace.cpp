@@ -24,7 +24,7 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create() {
+std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create(const esl::object::Values<std::string>&) {
 	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
 }
 

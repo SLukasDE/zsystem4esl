@@ -21,7 +21,10 @@ SOFTWARE.
 */
 
 #include <zsystem4esl/SignalHandler.h>
+
 #include <zsystem/SignalHandler.h>
+
+#include <esl/object/Values.h>
 
 namespace zsystem4esl {
 
@@ -69,11 +72,11 @@ zsystem::SignalHandler::Type translateSignalType(esl::system::Interface::SignalT
 }
 }
 
-void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler) {
+void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>&) {
 	zsystem::SignalHandler::install(translateSignalType(signalType), handler);
 }
 
-void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler) {
+void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>&) {
 	zsystem::SignalHandler::remove(translateSignalType(signalType), handler);
 }
 

@@ -25,12 +25,12 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::system::Interface::ProducerFile> ProducerFile::create(std::string filename, const esl::object::Values<std::string>& values) {
-	return std::unique_ptr<esl::system::Interface::ProducerFile>(new ProducerFile(std::move(filename), values));
+std::unique_ptr<esl::system::Interface::ProducerFile> ProducerFile::create(std::string filename, const esl::object::Values<std::string>& settings) {
+	return std::unique_ptr<esl::system::Interface::ProducerFile>(new ProducerFile(std::move(filename), settings));
 }
 
-ProducerFile::ProducerFile(std::string filename, const esl::object::Values<std::string>& values)
-: producerFile(FileDescriptor::getFileDescriptor(std::move(filename), true, false, false, values))
+ProducerFile::ProducerFile(std::string filename, const esl::object::Values<std::string>& settings)
+: producerFile(FileDescriptor::getFileDescriptor(std::move(filename), true, false, false, settings))
 { }
 
 std::size_t ProducerFile::write(esl::system::Interface::FileDescriptor& aFileDescriptor) {

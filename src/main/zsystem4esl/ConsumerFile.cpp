@@ -25,12 +25,12 @@ SOFTWARE.
 
 namespace zsystem4esl {
 
-std::unique_ptr<esl::system::Interface::Consumer> ConsumerFile::create(std::string filename, const esl::object::Values<std::string>& values) {
-	return std::unique_ptr<esl::system::Interface::Consumer>(new ConsumerFile(std::move(filename), values));
+std::unique_ptr<esl::system::Interface::Consumer> ConsumerFile::create(std::string filename, const esl::object::Values<std::string>& settings) {
+	return std::unique_ptr<esl::system::Interface::Consumer>(new ConsumerFile(std::move(filename), settings));
 }
 
-ConsumerFile::ConsumerFile(std::string filename, const esl::object::Values<std::string>& values)
-: consumerFile(FileDescriptor::getFileDescriptor(std::move(filename), false, true, true, values))
+ConsumerFile::ConsumerFile(std::string filename, const esl::object::Values<std::string>& settings)
+: consumerFile(FileDescriptor::getFileDescriptor(std::move(filename), false, true, true, settings))
 { }
 
 std::size_t ConsumerFile::read(esl::system::Interface::FileDescriptor& fileDescriptor) {

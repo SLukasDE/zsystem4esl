@@ -23,11 +23,12 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_PROCESS_H_
 #define ZSYSTEM4ESL_PROCESS_H_
 
+#include <zsystem/Process.h>
+
 #include <esl/system/Interface.h>
 #include <esl/system/process/Arguments.h>
 #include <esl/system/process/Environment.h>
-
-#include <zsystem/Process.h>
+#include <esl/object/Values.h>
 
 #include <string>
 #include <memory>
@@ -38,8 +39,8 @@ class Output;
 
 class Process : public esl::system::Interface::Process {
 public:
-	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::process::Arguments arguments, std::string workingDir);
-	static std::unique_ptr<esl::system::Interface::Process> createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
+	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>& setting);
+	static std::unique_ptr<esl::system::Interface::Process> createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir, const esl::object::Values<std::string>& setting);
 
 	Process(esl::system::process::Arguments arguments, std::string workingDir);
 	Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
