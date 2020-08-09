@@ -20,16 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/SignalHandler.h>
+#include <zsystem4esl/system/SignalHandler.h>
 
 #include <zsystem/SignalHandler.h>
 
 #include <esl/object/Values.h>
 
 namespace zsystem4esl {
+namespace system {
 
 namespace {
-
 zsystem::SignalHandler::Type translateSignalType(esl::system::Interface::SignalType signalType) {
 	switch(signalType) {
 	case esl::system::Interface::SignalType::hangUp:
@@ -80,4 +80,5 @@ void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::fun
 	zsystem::SignalHandler::remove(translateSignalType(signalType), handler);
 }
 
+} /* namespace system */
 } /* namespace zsystem4esl */

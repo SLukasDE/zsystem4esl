@@ -20,17 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_SIGNALHANDLER_H_
-#define ZSYSTEM4ESL_SIGNALHANDLER_H_
-
-#include <esl/system/Interface.h>
-#include <functional>
+#include <zsystem4esl/system/process/Producer.h>
+#include <zsystem4esl/system/process/Writer.h>
 
 namespace zsystem4esl {
+namespace system {
+namespace process {
 
-void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>& setting);
-void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>& setting);
+Producer::Producer(esl::system::Interface::Producer& aProducer)
+: producer(aProducer)
+{ }
 
+std::size_t Producer::write(zsystem::process::FileDescriptor& aFileDescriptor) {
+	Writer fileDescriptor(aFileDescriptor);
+	return producer.write(fileDescriptor);
+}
+
+} /* namespace process */
+} /* namespace system */
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_SIGNALHANDLER_H_ */

@@ -20,33 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_CONSUMERFILE_H_
-#define ZSYSTEM4ESL_CONSUMERFILE_H_
-
-#include <esl/system/Interface.h>
-#include <esl/object/Values.h>
-
-#include <zsystem/process/ConsumerFile.h>
-
-#include <string>
+#include <zsystem4esl/system/process/Writer.h>
 
 namespace zsystem4esl {
+namespace system {
+namespace process {
 
-class ConsumerFile : public esl::system::Interface::Consumer {
-public:
-	static std::unique_ptr<esl::system::Interface::Consumer> create(std::string filename, const esl::object::Values<std::string>& settings);
+Writer::Writer(zsystem::process::FileDescriptor& aFileDescriptor)
+: fileDescriptor(aFileDescriptor)
+{ }
 
-	ConsumerFile(std::string filename, const esl::object::Values<std::string>& settings);
+std::size_t Writer::write(const void* data, std::size_t size) {
+	return fileDescriptor.write(data, size);
+}
 
-	std::size_t read(esl::system::Interface::FileDescriptor& fileDescriptor) override;
-	//esl::system::Interface::FileDescriptor::Handle getFileDescriptorHandle() override;
-
-	zsystem::process::ConsumerFile& getConsumerFile();
-
-private:
-	zsystem::process::ConsumerFile consumerFile;
-};
-
+} /* namespace process */
+} /* namespace system */
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_CONSUMERFILE_H_ */

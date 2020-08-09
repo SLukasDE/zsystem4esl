@@ -20,31 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/ProducerFile.h>
-#include <zsystem4esl/FileDescriptor.h>
+#ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_
+#define ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_
+
+#include <esl/system/Interface.h>
+
+#include <zsystem/process/Consumer.h>
+#include <zsystem/process/FileDescriptor.h>
+
+#include <string>
 
 namespace zsystem4esl {
+namespace system {
+namespace process {
 
-std::unique_ptr<esl::system::Interface::ProducerFile> ProducerFile::create(std::string filename, const esl::object::Values<std::string>& settings) {
-	return std::unique_ptr<esl::system::Interface::ProducerFile>(new ProducerFile(std::move(filename), settings));
-}
+class Consumer : public zsystem::process::Consumer {
+public:
+	Consumer(esl::system::Interface::Consumer& consumer);
 
-ProducerFile::ProducerFile(std::string filename, const esl::object::Values<std::string>& settings)
-: producerFile(FileDescriptor::getFileDescriptor(std::move(filename), true, false, false, settings))
-{ }
+	std::size_t read(zsystem::process::FileDescriptor& fileDescriptor) override;
 
-std::size_t ProducerFile::write(esl::system::Interface::FileDescriptor& aFileDescriptor) {
-//	FileDescriptor fileDescriptor(aFileDescriptor);
-//	return producerFile.write(fileDescriptor);
-	return esl::system::Interface::FileDescriptor::npos;
-}
+private:
+	esl::system::Interface::Consumer& consumer;
+};
 
-std::size_t ProducerFile::getFileSize() const {
-	return producerFile.getFileSize();
-}
-
-zsystem::process::ProducerFile& ProducerFile::getProducerFile() {
-	return producerFile;
-}
-
+} /* namespace process */
+} /* namespace system */
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_ */

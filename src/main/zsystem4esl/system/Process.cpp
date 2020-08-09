@@ -20,24 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Process.h>
-#include <zsystem4esl/Consumer.h>
-#include <zsystem4esl/ConsumerFile.h>
-#include <zsystem4esl/Producer.h>
-#include <zsystem4esl/ProducerFile.h>
+#include <zsystem4esl/io/FileReader.h>
+#include <zsystem4esl/io/FileWriter.h>
+#include <zsystem4esl/system/Process.h>
+#include <zsystem4esl/system/process/Consumer.h>
+#include <zsystem4esl/system/process/Producer.h>
 
 #include <zsystem/process/Arguments.h>
 #include <zsystem/process/Environment.h>
 #include <zsystem/process/Consumer.h>
 #include <zsystem/process/Producer.h>
+#include <zsystem/process/ConsumerFile.h>
+#include <zsystem/process/ProducerFile.h>
 
-#include <esl/logging/Logger.h>
+#include <esl/io/FileReader.h>
+#include <esl/io/FileWriter.h>
 #include <esl/Stacktrace.h>
+#include <esl/system/process/ProducerReader.h>
+#include <esl/system/process/ConsumerWriter.h>
 
 #include <map>
 #include <memory>
 
 namespace zsystem4esl {
+namespace system {
 
 std::unique_ptr<esl::system::Interface::Process> Process::create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>&) {
 	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(workingDir)));
@@ -64,31 +70,52 @@ int Process::execute(const esl::system::Interface::Process::ParameterStreams& aP
 
 	for(auto& parameterStream : aParameterStreams) {
 		std::unique_ptr<zsystem::process::Consumer>& consumer = consumers[parameterStream.second.consumer];
-		ConsumerFile* consumerFile = nullptr;
+		zsystem::process::ConsumerFile* zConsumerFile = nullptr;
 
 		if(parameterStream.second.consumer) {
-			consumerFile = dynamic_cast<ConsumerFile*>(parameterStream.second.consumer);
-			if(!consumerFile && !consumer) {
-				consumer.reset(new Consumer(*parameterStream.second.consumer));
+			esl::system::process::ConsumerWriter* eslConsumerWriter = dynamic_cast<esl::system::process::ConsumerWriter*>(parameterStream.second.consumer);
+			if(eslConsumerWriter) {
+				esl::io::FileWriter* eslFileWriter = dynamic_cast<esl::io::FileWriter*>(eslConsumerWriter->getWriter());
+				if(eslFileWriter) {
+					io::FileWriter* fileWriter = dynamic_cast<io::FileWriter*>(eslFileWriter->getBaseImplementation());
+					if(fileWriter) {
+						zConsumerFile = &fileWriter->getConsumerFile();
+					}
+				}
+			}
+
+			if(!zConsumerFile && !consumer) {
+				consumer.reset(new process::Consumer(*parameterStream.second.consumer));
 			}
 		}
 
 		std::unique_ptr<zsystem::process::Producer>& producer = producers[parameterStream.second.producer];
-		ProducerFile* producerFile = nullptr;
+		zsystem::process::ProducerFile* zProducerFile = nullptr;
 
 		if(parameterStream.second.producer) {
-			producerFile = dynamic_cast<ProducerFile*>(parameterStream.second.producer);
-			if(!producerFile && !producer) {
-				producer.reset(new Producer(*parameterStream.second.producer));
+			esl::system::process::ProducerReader* eslProducerReader = dynamic_cast<esl::system::process::ProducerReader*>(parameterStream.second.producer);
+			if(eslProducerReader) {
+				esl::io::FileReader* eslFileReader = dynamic_cast<esl::io::FileReader*>(eslProducerReader->getReader());
+				if(eslFileReader) {
+					io::FileReader* fileReader = dynamic_cast<io::FileReader*>(eslFileReader->getBaseImplementation());
+					if(fileReader) {
+						zProducerFile = &fileReader->getProducerFile();
+					}
+				}
+			}
+
+			if(!zProducerFile && !producer) {
+				producer.reset(new process::Producer(*parameterStream.second.producer));
 			}
 		}
 
 		zsystem::Process::ParameterStream& zParameterStream = parameterStreams[parameterStream.first];
-		zParameterStream.consumer = consumerFile ? &consumerFile->getConsumerFile() : consumer.get();
-		zParameterStream.producer = producerFile ? &producerFile->getProducerFile() : producer.get();
+		zParameterStream.consumer = zConsumerFile ? zConsumerFile : consumer.get();
+		zParameterStream.producer = zProducerFile ? zProducerFile : producer.get();
 	}
 
 	return process.execute(parameterStreams, parameterFeatures);
 }
 
+} /* namespace system */
 } /* namespace zsystem4esl */

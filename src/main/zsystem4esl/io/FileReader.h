@@ -20,38 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_STACKTRACE_H_
-#define ZSYSTEM4ESL_STACKTRACE_H_
+#ifndef ZSYSTEM4ESL_IO_FILEREADER_H_
+#define ZSYSTEM4ESL_IO_FILEREADER_H_
 
-#include <zsystem/Backtrace.h>
-
-#include <esl/stacktrace/Interface.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
+#include <esl/utility/Reader.h>
 #include <esl/object/Values.h>
 
-#include <ostream>
-#include <vector>
+#include <zsystem/process/FileDescriptor.h>
+#include <zsystem/process/ProducerFile.h>
+
 #include <string>
 #include <memory>
 
 namespace zsystem4esl {
+namespace io {
 
-class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
+class FileReader : public esl::utility::Reader {
 public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const esl::object::Values<std::string>& settings);
+	static std::unique_ptr<esl::utility::Reader> create(std::string filename, const esl::object::Values<std::string>& settings);
 
-	Stacktrace() = default;
-	~Stacktrace() = default;
+	FileReader(std::string filename, const esl::object::Values<std::string>& settings);
 
-	void dump(std::ostream& stream) const override;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
+	std::size_t read(void* data, std::size_t size) override;
+
+	zsystem::process::ProducerFile& getProducerFile();
 
 private:
-	zsystem::Backtrace backtrace;
+	zsystem::process::FileDescriptor fileDescriptor;
+	std::unique_ptr<zsystem::process::ProducerFile> producerFile;
 };
 
+} /* namespace io */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_STACKTRACE_H_ */
+#endif /* ZSYSTEM4ESL_IO_FILEREADER_H_ */

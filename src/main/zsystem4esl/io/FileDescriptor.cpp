@@ -20,13 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/FileDescriptor.h>
+#include <zsystem4esl/io/FileDescriptor.h>
 
 #include <esl/utility/String.h>
 
 namespace zsystem4esl {
+namespace io {
 
-zsystem::process::FileDescriptor FileDescriptor::getFileDescriptor(std::string filename, bool isRead, bool isWrite, bool doOverwrite, const esl::object::Values<std::string>& values) {
+bool FileDescriptor::getIsRead(bool isRead, const esl::object::Values<std::string>& values) {
 	if(values.hasValue("read")) {
 		std::string value = esl::utility::String::toLower(values.getValue("read"));
 	    if(!value.empty()) {
@@ -34,6 +35,10 @@ zsystem::process::FileDescriptor FileDescriptor::getFileDescriptor(std::string f
 	    }
 	}
 
+	return isRead;
+}
+
+bool FileDescriptor::getIsWrite(bool isWrite, const esl::object::Values<std::string>& values) {
 	if(values.hasValue("write")) {
 		std::string value = esl::utility::String::toLower(values.getValue("write"));
 	    if(!value.empty()) {
@@ -41,6 +46,10 @@ zsystem::process::FileDescriptor FileDescriptor::getFileDescriptor(std::string f
 	    }
 	}
 
+	return isWrite;
+}
+
+bool FileDescriptor::getDoOverwrite(bool doOverwrite, const esl::object::Values<std::string>& values) {
 	if(values.hasValue("overwrite")) {
 		std::string value = esl::utility::String::toLower(values.getValue("overwrite"));
 	    if(!value.empty()) {
@@ -48,19 +57,8 @@ zsystem::process::FileDescriptor FileDescriptor::getFileDescriptor(std::string f
 	    }
 	}
 
-	return zsystem::process::FileDescriptor::openFile(filename, isRead, isWrite, doOverwrite);
+	return doOverwrite;
 }
 
-FileDescriptor::FileDescriptor(zsystem::process::FileDescriptor& aFileDescriptor)
-: fileDescriptor(aFileDescriptor)
-{ }
-
-std::size_t FileDescriptor::read(void* data, std::size_t size) {
-	return fileDescriptor.read(data, size);
-}
-
-std::size_t FileDescriptor::write(const void* data, std::size_t size) {
-	return fileDescriptor.write(data, size);
-}
-
+} /* namespace io */
 } /* namespace zsystem4esl */

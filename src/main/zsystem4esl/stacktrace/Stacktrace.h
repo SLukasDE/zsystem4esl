@@ -20,31 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Stacktrace.h>
+#ifndef ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
+#define ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
+
+#include <zsystem/Backtrace.h>
+
+#include <esl/stacktrace/Interface.h>
+#include <esl/logging/Location.h>
+#include <esl/logging/StreamReal.h>
+#include <esl/object/Values.h>
+
+#include <ostream>
+#include <vector>
+#include <string>
+#include <memory>
 
 namespace zsystem4esl {
+namespace stacktrace {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create(const esl::object::Values<std::string>&) {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
-}
+class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
+public:
+	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const esl::object::Values<std::string>& settings);
 
-void Stacktrace::dump(std::ostream& stream) const {
-	stream << "Stacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream << entry << "\n";
-	}
-}
+	Stacktrace() = default;
+	~Stacktrace() = default;
 
+	void dump(std::ostream& stream) const override;
+	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
+	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	stream(location.object, location.function, location.file, location.line) << "\nStacktrace:\n";
-	for (const auto& entry : backtrace.getElements()) {
-		stream(location.object, location.function, location.file, location.line) << entry << "\n";
-	}
-}
+private:
+	zsystem::Backtrace backtrace;
+};
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace(*this));
-}
-
+} /* namespace stacktrace */
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */

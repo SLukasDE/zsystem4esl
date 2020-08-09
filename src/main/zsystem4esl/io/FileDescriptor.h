@@ -20,18 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Producer.h>
-#include <zsystem4esl/FileDescriptor.h>
+#ifndef ZSYSTEM4ESL_IO_FILEDESCRIPTOR_H_
+#define ZSYSTEM4ESL_IO_FILEDESCRIPTOR_H_
+
+#include <esl/object/Values.h>
 
 namespace zsystem4esl {
+namespace io {
 
-Producer::Producer(esl::system::Interface::Producer& aProducer)
-: producer(aProducer)
-{ }
+class FileDescriptor {
+public:
+	FileDescriptor() = delete;
 
-std::size_t Producer::write(zsystem::process::FileDescriptor& aFileDescriptor) {
-	FileDescriptor fileDescriptor(aFileDescriptor);
-	return producer.write(fileDescriptor);
-}
+	static bool getIsRead(bool isRead, const esl::object::Values<std::string>& values);
+	static bool getIsWrite(bool isWrite, const esl::object::Values<std::string>& values);
+	static bool getDoOverwrite(bool doOverwrite, const esl::object::Values<std::string>& values);
+};
 
+} /* namespace io */
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_IO_FILEDESCRIPTOR_H_ */

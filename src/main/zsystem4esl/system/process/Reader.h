@@ -20,28 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_CONSUMER_H_
-#define ZSYSTEM4ESL_CONSUMER_H_
+#ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_READER_H_
+#define ZSYSTEM4ESL_SYSTEM_PROCESS_READER_H_
 
-#include <esl/system/Interface.h>
+#include <esl/utility/Reader.h>
 
-#include <zsystem/process/Consumer.h>
 #include <zsystem/process/FileDescriptor.h>
 
 #include <string>
 
 namespace zsystem4esl {
+namespace system {
+namespace process {
 
-class Consumer : public zsystem::process::Consumer {
+class Reader : public esl::utility::Reader {
 public:
-	Consumer(esl::system::Interface::Consumer& consumer);
+	Reader(zsystem::process::FileDescriptor& fileDescriptor);
 
-	std::size_t read(zsystem::process::FileDescriptor& fileDescriptor) override;
+	std::size_t read(void* data, std::size_t size) override;
 
 private:
-	esl::system::Interface::Consumer& consumer;
+	zsystem::process::FileDescriptor& fileDescriptor;
 };
 
+} /* namespace process */
+} /* namespace system */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_CONSUMER_H_ */
+#endif /* ZSYSTEM4ESL_SYSTEM_PROCESS_READER_H_ */

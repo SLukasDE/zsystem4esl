@@ -20,18 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Consumer.h>
-#include <zsystem4esl/FileDescriptor.h>
+#ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_
+#define ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_
+
+#include <esl/system/Interface.h>
+
+#include <zsystem/process/Producer.h>
+#include <zsystem/process/FileDescriptor.h>
+
+#include <string>
 
 namespace zsystem4esl {
+namespace system {
+namespace process {
 
-Consumer::Consumer(esl::system::Interface::Consumer& aConsumer)
-: consumer(aConsumer)
-{ }
+class Producer : public zsystem::process::Producer {
+public:
+	Producer(esl::system::Interface::Producer& producer);
 
-std::size_t Consumer::read(zsystem::process::FileDescriptor& aFileDescriptor) {
-	FileDescriptor fileDescriptor(aFileDescriptor);
-	return consumer.read(fileDescriptor);
-}
+	std::size_t write(zsystem::process::FileDescriptor& fileDescriptor) override;
 
+private:
+	esl::system::Interface::Producer& producer;
+};
+
+} /* namespace process */
+} /* namespace system */
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_ */

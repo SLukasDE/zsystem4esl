@@ -20,40 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_PRODUCERFILE_H_
-#define ZSYSTEM4ESL_PRODUCERFILE_H_
+#ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_H_
+#define ZSYSTEM4ESL_SYSTEM_PROCESS_H_
+
+#include <zsystem/Process.h>
 
 #include <esl/system/Interface.h>
+#include <esl/system/process/Arguments.h>
+#include <esl/system/process/Environment.h>
 #include <esl/object/Values.h>
-
-#include <zsystem/process/ProducerFile.h>
 
 #include <string>
 #include <memory>
 
 namespace zsystem4esl {
+namespace system {
 
-class ProducerFile : public esl::system::Interface::ProducerFile {
+class Process : public esl::system::Interface::Process {
 public:
-	static std::unique_ptr<esl::system::Interface::ProducerFile> create(std::string filename, const esl::object::Values<std::string>& settings);
+	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>& setting);
+	static std::unique_ptr<esl::system::Interface::Process> createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir, const esl::object::Values<std::string>& setting);
 
-	ProducerFile(std::string filename, const esl::object::Values<std::string>& settings);
+	Process(esl::system::process::Arguments arguments, std::string workingDir);
+	Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
 
-	/* return: FileDescriptor::npos
-	 *           if there is no more data to produce (IMPORTANT)
-	 *
-	 *         Number of characters written to fileDescriptor
-	 *           if there are data available to write to fileDescripor
-	 *           (produced now or queued from previous call). */
-	std::size_t write(esl::system::Interface::FileDescriptor& fileDescriptor) override;
-	std::size_t getFileSize() const override;
-
-	zsystem::process::ProducerFile& getProducerFile();
+	int execute(const esl::system::Interface::Process::ParameterStreams& parameterStreams, esl::system::Interface::Process::ParameterFeatures& parameterFeatures) override;
 
 private:
-	zsystem::process::ProducerFile producerFile;
+    zsystem::Process process;
 };
 
+} /* namespace system */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_PRODUCERFILE_H_ */
+#endif /* ZSYSTEM4ESL_SYSTEM_PROCESS_H_ */

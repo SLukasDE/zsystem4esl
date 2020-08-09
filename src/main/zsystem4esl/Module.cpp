@@ -21,16 +21,17 @@ SOFTWARE.
 */
 
 #include <zsystem4esl/Module.h>
-#include <zsystem4esl/Process.h>
-#include <zsystem4esl/ConsumerFile.h>
-#include <zsystem4esl/ProducerFile.h>
-#include <zsystem4esl/SignalHandler.h>
-#include <zsystem4esl/Stacktrace.h>
+#include <zsystem4esl/io/FileReader.h>
+#include <zsystem4esl/io/FileWriter.h>
+#include <zsystem4esl/stacktrace/Stacktrace.h>
+#include <zsystem4esl/system/Process.h>
+#include <zsystem4esl/system/SignalHandler.h>
 
-#include <esl/system/Interface.h>
-#include <esl/stacktrace/Interface.h>
-#include <esl/module/Interface.h>
+#include <esl/io/Interface.h>
 #include <esl/Stacktrace.h>
+#include <esl/stacktrace/Interface.h>
+#include <esl/system/Interface.h>
+#include <esl/module/Interface.h>
 
 #include <stdexcept>
 #include <memory>
@@ -58,14 +59,16 @@ Module::Module()
 {
 	esl::module::Module::initialize(*this);
 
+	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::io::Interface(
+			getId(), getImplementation(),
+			&io::FileReader::create, &io::FileWriter::create)));
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::system::Interface(
 			getId(), getImplementation(),
-			&Process::create, &Process::createWithEnvironment,
-			&ConsumerFile::create, &ProducerFile::create,
-			&signalHandlerInstall, &signalHandlerRemove)));
+			&system::Process::create, &system::Process::createWithEnvironment,
+			&system::signalHandlerInstall, &system::signalHandlerRemove)));
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::stacktrace::Interface(
 			getId(), getImplementation(),
-			&Stacktrace::create)));
+			&stacktrace::Stacktrace::create)));
 }
 
 } /* anonymous namespace */

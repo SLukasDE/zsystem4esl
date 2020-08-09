@@ -20,29 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/ConsumerFile.h>
-#include <zsystem4esl/FileDescriptor.h>
+#ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_WRITER_H_
+#define ZSYSTEM4ESL_SYSTEM_PROCESS_WRITER_H_
+
+#include <esl/utility/Writer.h>
+
+#include <zsystem/process/FileDescriptor.h>
+
+#include <string>
 
 namespace zsystem4esl {
+namespace system {
+namespace process {
 
-std::unique_ptr<esl::system::Interface::Consumer> ConsumerFile::create(std::string filename, const esl::object::Values<std::string>& settings) {
-	return std::unique_ptr<esl::system::Interface::Consumer>(new ConsumerFile(std::move(filename), settings));
-}
+class Writer : public esl::utility::Writer {
+public:
+	Writer(zsystem::process::FileDescriptor& fileDescriptor);
 
-ConsumerFile::ConsumerFile(std::string filename, const esl::object::Values<std::string>& settings)
-: consumerFile(FileDescriptor::getFileDescriptor(std::move(filename), false, true, true, settings))
-{ }
+	std::size_t write(const void* data, std::size_t size) override;
 
-std::size_t ConsumerFile::read(esl::system::Interface::FileDescriptor& fileDescriptor) {
-	return esl::system::Interface::FileDescriptor::npos;
-}
-/*
-esl::system::Interface::FileDescriptor::Handle ConsumerFile::getFileDescriptorHandle() {
-	return consumerFile.getFileDescriptor().getHandle();
-}
-*/
-zsystem::process::ConsumerFile& ConsumerFile::getConsumerFile() {
-	return consumerFile;
-}
+private:
+	zsystem::process::FileDescriptor& fileDescriptor;
+};
 
+} /* namespace process */
+} /* namespace system */
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_SYSTEM_PROCESS_WRITER_H_ */

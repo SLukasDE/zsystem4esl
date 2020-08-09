@@ -20,28 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_PRODUCER_H_
-#define ZSYSTEM4ESL_PRODUCER_H_
-
-#include <esl/system/Interface.h>
-
-#include <zsystem/process/Producer.h>
-#include <zsystem/process/FileDescriptor.h>
-
-#include <string>
+#include <zsystem4esl/io/FileReader.h>
+#include <zsystem4esl/io/FileDescriptor.h>
 
 namespace zsystem4esl {
+namespace io {
 
-class Producer : public zsystem::process::Producer {
-public:
-	Producer(esl::system::Interface::Producer& producer);
+std::unique_ptr<esl::utility::Reader> FileReader::create(std::string filename, const esl::object::Values<std::string>& settings) {
+	return std::unique_ptr<esl::utility::Reader>(new FileReader(std::move(filename), settings));
+}
 
-	std::size_t write(zsystem::process::FileDescriptor& fileDescriptor) override;
+FileReader::FileReader(std::string filename, const esl::object::Values<std::string>& settings)
+: fileDescriptor(zsystem::process::FileDescriptor::openFile(
+		filename,
+		FileDescriptor::getIsRead(true, settings),
+		FileDescriptor::getIsWrite(false, settings),
+		FileDescriptor::getDoOverwrite(false, settings)))
+{ }
 
-private:
-	esl::system::Interface::Producer& producer;
-};
+std::size_t FileReader::read(void* data, std::size_t size) {
+	return fileDescriptor.read(data, size);
+}
 
+zsystem::process::ProducerFile& FileReader::getProducerFile() {
+	if(!producerFile) {
+		producerFile.reset(new zsystem::process::ProducerFile(std::move(fileDescriptor)));
+	}
+	return *producerFile;
+}
+
+} /* namespace io */
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_PRODUCER_H_ */

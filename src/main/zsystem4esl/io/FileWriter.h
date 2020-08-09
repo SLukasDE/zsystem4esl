@@ -20,37 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_PROCESS_H_
-#define ZSYSTEM4ESL_PROCESS_H_
+#ifndef ZSYSTEM4ESL_IO_FILEWRITER_H_
+#define ZSYSTEM4ESL_IO_FILEWRITER_H_
 
-#include <zsystem/Process.h>
-
-#include <esl/system/Interface.h>
-#include <esl/system/process/Arguments.h>
-#include <esl/system/process/Environment.h>
+#include <esl/utility/Writer.h>
 #include <esl/object/Values.h>
+
+#include <zsystem/process/FileDescriptor.h>
+#include <zsystem/process/ConsumerFile.h>
 
 #include <string>
 #include <memory>
 
 namespace zsystem4esl {
+namespace io {
 
-class Output;
-
-class Process : public esl::system::Interface::Process {
+class FileWriter : public esl::utility::Writer {
 public:
-	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>& setting);
-	static std::unique_ptr<esl::system::Interface::Process> createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir, const esl::object::Values<std::string>& setting);
+	static std::unique_ptr<esl::utility::Writer> create(std::string filename, const esl::object::Values<std::string>& settings);
 
-	Process(esl::system::process::Arguments arguments, std::string workingDir);
-	Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
+	FileWriter(std::string filename, const esl::object::Values<std::string>& settings);
 
-	int execute(const esl::system::Interface::Process::ParameterStreams& parameterStreams, esl::system::Interface::Process::ParameterFeatures& parameterFeatures) override;
+	std::size_t write(const void* data, std::size_t size) override;
+
+	zsystem::process::ConsumerFile& getConsumerFile();
 
 private:
-    zsystem::Process process;
+	zsystem::process::FileDescriptor fileDescriptor;
+	std::unique_ptr<zsystem::process::ConsumerFile> consumerFile;
 };
 
+} /* namespace io */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_PROCESS_H_ */
+#endif /* ZSYSTEM4ESL_IO_FILEWRITER_H_ */

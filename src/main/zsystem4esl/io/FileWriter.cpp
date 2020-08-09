@@ -20,31 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_FILEDESCRIPTOR_H_
-#define ZSYSTEM4ESL_FILEDESCRIPTOR_H_
-
-#include <esl/system/Interface.h>
-#include <esl/object/Values.h>
-
-#include <zsystem/process/FileDescriptor.h>
-
-#include <string>
+#include <zsystem4esl/io/FileWriter.h>
+#include <zsystem4esl/io/FileDescriptor.h>
 
 namespace zsystem4esl {
+namespace io {
 
-class FileDescriptor : public esl::system::Interface::FileDescriptor {
-public:
-	static zsystem::process::FileDescriptor getFileDescriptor(std::string filename, bool isRead, bool isWrite, bool doOverwrite, const esl::object::Values<std::string>& values);
+std::unique_ptr<esl::utility::Writer> FileWriter::create(std::string filename, const esl::object::Values<std::string>& settings) {
+	return std::unique_ptr<esl::utility::Writer>(new FileWriter(std::move(filename), settings));
+}
 
-	FileDescriptor(zsystem::process::FileDescriptor& fileDescriptor);
+FileWriter::FileWriter(std::string filename, const esl::object::Values<std::string>& settings)
+: fileDescriptor(zsystem::process::FileDescriptor::openFile(
+		filename,
+		FileDescriptor::getIsRead(false, settings),
+		FileDescriptor::getIsWrite(true, settings),
+		FileDescriptor::getDoOverwrite(true, settings)))
+{ }
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t write(const void* data, std::size_t size) override;
+std::size_t FileWriter::write(const void* data, std::size_t size) {
+	return fileDescriptor.write(data, size);
+}
 
-private:
-	zsystem::process::FileDescriptor& fileDescriptor;
-};
+zsystem::process::ConsumerFile& FileWriter::getConsumerFile() {
+	if(!consumerFile) {
+		consumerFile.reset(new zsystem::process::ConsumerFile(std::move(fileDescriptor)));
+	}
+	return *consumerFile;
+}
 
+} /* namespace io */
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_FILEDESCRIPTOR_H_ */
