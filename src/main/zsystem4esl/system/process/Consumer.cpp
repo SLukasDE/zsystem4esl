@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-Consumer::Consumer(esl::system::Interface::Consumer& aConsumer)
+Consumer::Consumer(esl::utility::Consumer& aConsumer)
 : consumer(aConsumer)
 { }
 

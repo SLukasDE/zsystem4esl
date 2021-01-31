@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,8 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_
 
-#include <esl/system/Interface.h>
+//#include <esl/system/Interface.h>
+#include <esl/utility/Producer.h>
 
 #include <zsystem/process/Producer.h>
 #include <zsystem/process/FileDescriptor.h>
@@ -36,12 +37,12 @@ namespace process {
 
 class Producer : public zsystem::process::Producer {
 public:
-	Producer(esl::system::Interface::Producer& producer);
+	Producer(esl::utility::Producer& producer);
 
 	std::size_t write(zsystem::process::FileDescriptor& fileDescriptor) override;
 
 private:
-	esl::system::Interface::Producer& producer;
+	esl::utility::Producer& producer;
 };
 
 } /* namespace process */

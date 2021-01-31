@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,9 +35,11 @@ SOFTWARE.
 
 #include <esl/io/FileReader.h>
 #include <esl/io/FileWriter.h>
-#include <esl/Stacktrace.h>
+#include <esl/utility/Consumer.h>
+#include <esl/utility/Producer.h>
 #include <esl/system/process/ProducerReader.h>
 #include <esl/system/process/ConsumerWriter.h>
+#include <esl/Stacktrace.h>
 
 #include <map>
 #include <memory>
@@ -65,8 +67,8 @@ int Process::execute(const esl::system::Interface::Process::ParameterStreams& aP
 	zsystem::Process::ParameterStreams parameterStreams;
 	zsystem::Process::ParameterFeatures parameterFeatures;
 
-	std::map<esl::system::Interface::Consumer*, std::unique_ptr<zsystem::process::Consumer>> consumers;
-	std::map<esl::system::Interface::Producer*, std::unique_ptr<zsystem::process::Producer>> producers;
+	std::map<esl::utility::Consumer*, std::unique_ptr<zsystem::process::Consumer>> consumers;
+	std::map<esl::utility::Producer*, std::unique_ptr<zsystem::process::Producer>> producers;
 
 	for(auto& parameterStream : aParameterStreams) {
 		std::unique_ptr<zsystem::process::Consumer>& consumer = consumers[parameterStream.second.consumer];

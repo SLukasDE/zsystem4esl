@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,8 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_
 
-#include <esl/system/Interface.h>
+//#include <esl/system/Interface.h>
+#include <esl/utility/Consumer.h>
 
 #include <zsystem/process/Consumer.h>
 #include <zsystem/process/FileDescriptor.h>
@@ -36,12 +37,12 @@ namespace process {
 
 class Consumer : public zsystem::process::Consumer {
 public:
-	Consumer(esl::system::Interface::Consumer& consumer);
+	Consumer(esl::utility::Consumer& consumer);
 
 	std::size_t read(zsystem::process::FileDescriptor& fileDescriptor) override;
 
 private:
-	esl::system::Interface::Consumer& consumer;
+	esl::utility::Consumer& consumer;
 };
 
 } /* namespace process */
