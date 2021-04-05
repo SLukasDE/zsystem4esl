@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_WRITER_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_WRITER_H_
 
-#include <esl/utility/Writer.h>
+#include <esl/io/Writer.h>
 
 #include <zsystem/process/FileDescriptor.h>
 
@@ -33,11 +33,12 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-class Writer : public esl::utility::Writer {
+class Writer : public esl::io::Writer {
 public:
 	Writer(zsystem::process::FileDescriptor& fileDescriptor);
 
 	std::size_t write(const void* data, std::size_t size) override;
+	std::size_t getSizeWritable() const override;
 
 private:
 	zsystem::process::FileDescriptor& fileDescriptor;

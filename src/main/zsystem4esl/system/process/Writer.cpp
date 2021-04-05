@@ -34,6 +34,10 @@ std::size_t Writer::write(const void* data, std::size_t size) {
 	return fileDescriptor.write(data, size);
 }
 
+std::size_t Writer::getSizeWritable() const {
+	return Writer::npos;
+}
+
 } /* namespace process */
 } /* namespace system */
 } /* namespace zsystem4esl */

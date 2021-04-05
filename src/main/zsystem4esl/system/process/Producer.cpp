@@ -27,13 +27,13 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-Producer::Producer(esl::utility::Producer& aProducer)
+Producer::Producer(esl::io::Producer& aProducer)
 : producer(aProducer)
 { }
 
 std::size_t Producer::write(zsystem::process::FileDescriptor& aFileDescriptor) {
 	Writer fileDescriptor(aFileDescriptor);
-	return producer.write(fileDescriptor);
+	return producer.produce(fileDescriptor);
 }
 
 } /* namespace process */

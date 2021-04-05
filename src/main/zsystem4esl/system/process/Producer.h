@@ -23,8 +23,7 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_PRODUCER_H_
 
-//#include <esl/system/Interface.h>
-#include <esl/utility/Producer.h>
+#include <esl/io/Producer.h>
 
 #include <zsystem/process/Producer.h>
 #include <zsystem/process/FileDescriptor.h>
@@ -37,12 +36,12 @@ namespace process {
 
 class Producer : public zsystem::process::Producer {
 public:
-	Producer(esl::utility::Producer& producer);
+	Producer(esl::io::Producer& producer);
 
 	std::size_t write(zsystem::process::FileDescriptor& fileDescriptor) override;
 
 private:
-	esl::utility::Producer& producer;
+	esl::io::Producer& producer;
 };
 
 } /* namespace process */

@@ -23,8 +23,7 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_CONSUMER_H_
 
-//#include <esl/system/Interface.h>
-#include <esl/utility/Consumer.h>
+#include <esl/io/Consumer.h>
 
 #include <zsystem/process/Consumer.h>
 #include <zsystem/process/FileDescriptor.h>
@@ -37,12 +36,12 @@ namespace process {
 
 class Consumer : public zsystem::process::Consumer {
 public:
-	Consumer(esl::utility::Consumer& consumer);
+	Consumer(esl::io::Consumer& consumer);
 
 	std::size_t read(zsystem::process::FileDescriptor& fileDescriptor) override;
 
 private:
-	esl::utility::Consumer& consumer;
+	esl::io::Consumer& consumer;
 };
 
 } /* namespace process */

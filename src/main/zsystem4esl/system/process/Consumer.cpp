@@ -27,13 +27,13 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-Consumer::Consumer(esl::utility::Consumer& aConsumer)
+Consumer::Consumer(esl::io::Consumer& aConsumer)
 : consumer(aConsumer)
 { }
 
 std::size_t Consumer::read(zsystem::process::FileDescriptor& aFileDescriptor) {
 	Reader fileDescriptor(aFileDescriptor);
-	return consumer.read(fileDescriptor);
+	return consumer.consume(fileDescriptor);
 }
 
 } /* namespace process */

@@ -23,6 +23,7 @@ SOFTWARE.
 #include <zsystem4esl/system/SignalHandler.h>
 
 #include <zsystem/SignalHandler.h>
+#include <zsystem/Signal.h>
 
 #include <esl/object/Values.h>
 
@@ -30,45 +31,45 @@ namespace zsystem4esl {
 namespace system {
 
 namespace {
-zsystem::SignalHandler::Type translateSignalType(esl::system::Interface::SignalType signalType) {
+zsystem::Signal::Type translateSignalType(esl::system::Interface::SignalType signalType) {
 	switch(signalType) {
 	case esl::system::Interface::SignalType::hangUp:
-		return zsystem::SignalHandler::Type::hangUp;
+		return zsystem::Signal::Type::hangUp;
 	case esl::system::Interface::SignalType::interrupt:
-		return zsystem::SignalHandler::Type::interrupt;
+		return zsystem::Signal::Type::interrupt;
 	case esl::system::Interface::SignalType::quit:
-		return zsystem::SignalHandler::Type::quit;
+		return zsystem::Signal::Type::quit;
 	case esl::system::Interface::SignalType::ill:
-		return zsystem::SignalHandler::Type::ill;
+		return zsystem::Signal::Type::ill;
 	case esl::system::Interface::SignalType::trap:
-		return zsystem::SignalHandler::Type::trap;
+		return zsystem::Signal::Type::trap;
 	case esl::system::Interface::SignalType::abort:
-		return zsystem::SignalHandler::Type::abort;
+		return zsystem::Signal::Type::abort;
 	case esl::system::Interface::SignalType::busError:
-		return zsystem::SignalHandler::Type::busError;
+		return zsystem::Signal::Type::busError;
 	case esl::system::Interface::SignalType::floatingPointException:
-		return zsystem::SignalHandler::Type::floatingPointException;
+		return zsystem::Signal::Type::floatingPointException;
 	case esl::system::Interface::SignalType::segmentationViolation:
-		return zsystem::SignalHandler::Type::segmentationViolation;
+		return zsystem::Signal::Type::segmentationViolation;
 	case esl::system::Interface::SignalType::user1:
-		return zsystem::SignalHandler::Type::user1;
+		return zsystem::Signal::Type::user1;
 	case esl::system::Interface::SignalType::user2:
-		return zsystem::SignalHandler::Type::user2;
+		return zsystem::Signal::Type::user2;
 	case esl::system::Interface::SignalType::alarm:
-		return zsystem::SignalHandler::Type::alarm;
+		return zsystem::Signal::Type::alarm;
 	case esl::system::Interface::SignalType::child:
-		return zsystem::SignalHandler::Type::child;
+		return zsystem::Signal::Type::child;
 	case esl::system::Interface::SignalType::stackFault:
-		return zsystem::SignalHandler::Type::stackFault;
+		return zsystem::Signal::Type::stackFault;
 	case esl::system::Interface::SignalType::terminate:
-		return zsystem::SignalHandler::Type::terminate;
+		return zsystem::Signal::Type::terminate;
 	case esl::system::Interface::SignalType::pipe:
-		return zsystem::SignalHandler::Type::pipe;
+		return zsystem::Signal::Type::pipe;
 	default:
 		break;
 	}
 
-	return zsystem::SignalHandler::Type::unknown;
+	return zsystem::Signal::Type::unknown;
 }
 }
 

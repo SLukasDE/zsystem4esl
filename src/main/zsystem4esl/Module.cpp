@@ -21,13 +21,10 @@ SOFTWARE.
 */
 
 #include <zsystem4esl/Module.h>
-#include <zsystem4esl/io/FileReader.h>
-#include <zsystem4esl/io/FileWriter.h>
 #include <zsystem4esl/stacktrace/Stacktrace.h>
 #include <zsystem4esl/system/Process.h>
 #include <zsystem4esl/system/SignalHandler.h>
 
-#include <esl/io/Interface.h>
 #include <esl/Stacktrace.h>
 #include <esl/stacktrace/Interface.h>
 #include <esl/system/Interface.h>
@@ -59,12 +56,9 @@ Module::Module()
 {
 	esl::module::Module::initialize(*this);
 
-	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::io::Interface(
-			getId(), getImplementation(),
-			&io::FileReader::create, &io::FileWriter::create)));
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::system::Interface(
 			getId(), getImplementation(),
-			&system::Process::create, &system::Process::createWithEnvironment,
+			&system::Process::create,
 			&system::signalHandlerInstall, &system::signalHandlerRemove)));
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::stacktrace::Interface(
 			getId(), getImplementation(),

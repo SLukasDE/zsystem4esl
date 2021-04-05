@@ -34,6 +34,18 @@ std::size_t Reader::read(void* data, std::size_t size) {
 	return fileDescriptor.read(data, size);
 }
 
+std::size_t Reader::getSizeReadable() const {
+	return Reader::npos;
+}
+
+bool Reader::hasSize() const {
+	return true;
+}
+
+std::size_t Reader::getSize() const {
+	return fileDescriptor.getFileSize();
+}
+
 } /* namespace process */
 } /* namespace system */
 } /* namespace zsystem4esl */

@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/io/FileReader.h>
-#include <zsystem4esl/io/FileWriter.h>
 #include <zsystem4esl/system/Process.h>
 #include <zsystem4esl/system/process/Consumer.h>
 #include <zsystem4esl/system/process/Producer.h>
@@ -32,91 +30,175 @@ SOFTWARE.
 #include <zsystem/process/Producer.h>
 #include <zsystem/process/ConsumerFile.h>
 #include <zsystem/process/ProducerFile.h>
+#include <zsystem/Signal.h>
 
-#include <esl/io/FileReader.h>
-#include <esl/io/FileWriter.h>
-#include <esl/utility/Consumer.h>
-#include <esl/utility/Producer.h>
-#include <esl/system/process/ProducerReader.h>
-#include <esl/system/process/ConsumerWriter.h>
+#include <esl/io/Consumer.h>
+#include <esl/io/Producer.h>
+#include <esl/io/ProducerReader.h>
+#include <esl/io/ConsumerWriter.h>
 #include <esl/Stacktrace.h>
 
+#include <signal.h> // sigaction(), sigsuspend(), sig*()
+
+#include <tuple>
 #include <map>
 #include <memory>
 
 namespace zsystem4esl {
 namespace system {
 
-std::unique_ptr<esl::system::Interface::Process> Process::create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>&) {
-	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(workingDir)));
+std::unique_ptr<esl::system::Interface::Process> Process::create(esl::system::Arguments arguments, const esl::object::Values<std::string>&) {
+	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments)));
 }
 
-std::unique_ptr<esl::system::Interface::Process> Process::createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir, const esl::object::Values<std::string>&) {
-	return std::unique_ptr<esl::system::Interface::Process>(new Process(std::move(arguments), std::move(environment), std::move(workingDir)));
+Process::Process(esl::system::Arguments arguments)
+: process(zsystem::process::Arguments(arguments.getArgs()))
+{ }
+
+void Process::setWorkingDir(std::string workingDir) {
+	process.setWorkingDir(std::move(workingDir));
 }
 
-Process::Process(esl::system::process::Arguments arguments, std::string workingDir)
-: process(zsystem::process::Arguments(arguments.getArgs()), std::move(workingDir))
-{ }
+void Process::setEnvironment(std::unique_ptr<esl::system::Environment> aEnvironment) {
+	environment = std::move(aEnvironment);
 
-Process::Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir)
-: process(zsystem::process::Arguments(arguments.getArgs()), zsystem::process::Environment(environment.getValues()), std::move(workingDir))
-{ }
+	if(environment) {
+		process.setEnvironment(std::unique_ptr<zsystem::process::Environment>(new zsystem::process::Environment(environment->getValues())));
+	}
+	else {
+		process.setEnvironment(nullptr);
+	}
+}
 
-int Process::execute(const esl::system::Interface::Process::ParameterStreams& aParameterStreams, esl::system::Interface::Process::ParameterFeatures& aParameterFeatures) {
-	zsystem::Process::ParameterStreams parameterStreams;
-	zsystem::Process::ParameterFeatures parameterFeatures;
+const esl::system::Environment* Process::getEnvironment() const {
+	return environment.get();
+}
 
-	std::map<esl::utility::Consumer*, std::unique_ptr<zsystem::process::Consumer>> consumers;
-	std::map<esl::utility::Producer*, std::unique_ptr<zsystem::process::Producer>> producers;
+void Process::sendSignal(esl::system::Interface::SignalType signal) {
+	if(handle == zsystem::Process::noHandle) {
+		return;
+	}
+	switch(signal) {
+	case esl::system::Interface::SignalType::hangUp:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::hangUp);
+		break;
+	case esl::system::Interface::SignalType::interrupt:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::interrupt);
+		break;
+	case esl::system::Interface::SignalType::quit:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::quit);
+		break;
+	case esl::system::Interface::SignalType::ill:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::ill);
+		break;
+	case esl::system::Interface::SignalType::trap:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::trap);
+		break;
+	case esl::system::Interface::SignalType::abort:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::abort);
+		break;
+	case esl::system::Interface::SignalType::busError:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::busError);
+		break;
+	case esl::system::Interface::SignalType::floatingPointException:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::floatingPointException);
+		break;
+	case esl::system::Interface::SignalType::segmentationViolation:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::segmentationViolation);
+		break;
+	case esl::system::Interface::SignalType::user1:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::user1);
+		break;
+	case esl::system::Interface::SignalType::user2:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::user2);
+		break;
+	case esl::system::Interface::SignalType::alarm:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::alarm);
+		break;
+	case esl::system::Interface::SignalType::child:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::child);
+		break;
+	case esl::system::Interface::SignalType::stackFault:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::stackFault);
+		break;
+	case esl::system::Interface::SignalType::terminate:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::terminate);
+		break;
+	case esl::system::Interface::SignalType::pipe:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::pipe);
+		break;
+	case esl::system::Interface::SignalType::kill:
+		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::kill);
+		break;
+	default:
+		break;
+	};
+}
+
+const void* Process::getNativeHandle() const {
+	handle = process.getHandle();
+	return handle == zsystem::Process::noHandle ? nullptr : &handle;
+}
+
+int Process::execute(esl::system::Interface::Process::ParameterStreams& aParameterStreams, esl::system::Interface::Process::ParameterFeatures&) {
+	std::map<std::string, std::unique_ptr<zsystem::process::ConsumerFile>> pathToZSystemConsumerFile;
+	std::map<std::string, std::unique_ptr<zsystem::process::ProducerFile>> pathToZSystemProducerFile;
 
 	for(auto& parameterStream : aParameterStreams) {
-		std::unique_ptr<zsystem::process::Consumer>& consumer = consumers[parameterStream.second.consumer];
-		zsystem::process::ConsumerFile* zConsumerFile = nullptr;
+		if(!parameterStream.second.getInput() && !parameterStream.second.getInputPath().empty()) {
+			std::string path = parameterStream.second.getInputPath().generic_string();
 
-		if(parameterStream.second.consumer) {
-			esl::system::process::ConsumerWriter* eslConsumerWriter = dynamic_cast<esl::system::process::ConsumerWriter*>(parameterStream.second.consumer);
-			if(eslConsumerWriter) {
-				esl::io::FileWriter* eslFileWriter = dynamic_cast<esl::io::FileWriter*>(eslConsumerWriter->getWriter());
-				if(eslFileWriter) {
-					io::FileWriter* fileWriter = dynamic_cast<io::FileWriter*>(eslFileWriter->getBaseImplementation());
-					if(fileWriter) {
-						zConsumerFile = &fileWriter->getConsumerFile();
-					}
-				}
-			}
-
-			if(!zConsumerFile && !consumer) {
-				consumer.reset(new process::Consumer(*parameterStream.second.consumer));
+			std::unique_ptr<zsystem::process::ConsumerFile>& zsystemConsumerFile = pathToZSystemConsumerFile[path];
+			if(!zsystemConsumerFile) {
+				zsystemConsumerFile.reset(new zsystem::process::ConsumerFile(zsystem::process::FileDescriptor::openFile(path, true, false, false)));
 			}
 		}
 
-		std::unique_ptr<zsystem::process::Producer>& producer = producers[parameterStream.second.producer];
-		zsystem::process::ProducerFile* zProducerFile = nullptr;
+		if(!parameterStream.second.getOutput() && !parameterStream.second.getOutputPath().empty()) {
+			std::string path = parameterStream.second.getOutputPath().generic_string();
 
-		if(parameterStream.second.producer) {
-			esl::system::process::ProducerReader* eslProducerReader = dynamic_cast<esl::system::process::ProducerReader*>(parameterStream.second.producer);
-			if(eslProducerReader) {
-				esl::io::FileReader* eslFileReader = dynamic_cast<esl::io::FileReader*>(eslProducerReader->getReader());
-				if(eslFileReader) {
-					io::FileReader* fileReader = dynamic_cast<io::FileReader*>(eslFileReader->getBaseImplementation());
-					if(fileReader) {
-						zProducerFile = &fileReader->getProducerFile();
-					}
-				}
-			}
-
-			if(!zProducerFile && !producer) {
-				producer.reset(new process::Producer(*parameterStream.second.producer));
+			std::unique_ptr<zsystem::process::ProducerFile>& zsystemProducerFile = pathToZSystemProducerFile[path];
+			if(!zsystemProducerFile) {
+				zsystemProducerFile.reset(new zsystem::process::ProducerFile(zsystem::process::FileDescriptor::openFile(path, false, true, true)));
 			}
 		}
-
-		zsystem::Process::ParameterStream& zParameterStream = parameterStreams[parameterStream.first];
-		zParameterStream.consumer = zConsumerFile ? zConsumerFile : consumer.get();
-		zParameterStream.producer = zProducerFile ? zProducerFile : producer.get();
 	}
 
-	return process.execute(parameterStreams, parameterFeatures);
+	zsystem::Process::ParameterStreams zsystemParameterStreams;
+	std::map<esl::io::Consumer*, std::unique_ptr<zsystem::process::Consumer>> eslToZSystemConsumer;
+	std::map<esl::io::Producer*, std::unique_ptr<zsystem::process::Producer>> eslToZSystemProducer;
+
+	for(auto& parameterStream : aParameterStreams) {
+		zsystem::Process::ParameterStream& zystemParameterStream = zsystemParameterStreams[parameterStream.first];
+
+		if(parameterStream.second.getInput()) {
+			std::unique_ptr<zsystem::process::Consumer>& zsystemConsumer = eslToZSystemConsumer[&parameterStream.second.getInput().getConsumer()];
+			if(!zsystemConsumer) {
+				zsystemConsumer.reset(new process::Consumer(parameterStream.second.getInput().getConsumer()));
+			}
+			zystemParameterStream.consumer = zsystemConsumer.get();
+		}
+		else if(!parameterStream.second.getInputPath().empty()) {
+			std::string path = parameterStream.second.getInputPath().generic_string();
+			zystemParameterStream.consumer = pathToZSystemConsumerFile[path].get();
+		}
+
+
+		if(parameterStream.second.getOutput()) {
+			std::unique_ptr<zsystem::process::Producer>& zsystemProducer = eslToZSystemProducer[&parameterStream.second.getOutput().getProducer()];
+			if(!zsystemProducer) {
+				zsystemProducer.reset(new process::Producer(parameterStream.second.getOutput().getProducer()));
+			}
+			zystemParameterStream.producer = zsystemProducer.get();
+		}
+		else if(!parameterStream.second.getOutputPath().empty()) {
+			std::string path = parameterStream.second.getOutputPath().generic_string();
+			zystemParameterStream.producer = pathToZSystemProducerFile[path].get();
+		}
+	}
+
+	zsystem::Process::ParameterFeatures zsystemParameterFeatures;
+	return process.execute(zsystemParameterStreams, zsystemParameterFeatures);
 }
 
 } /* namespace system */

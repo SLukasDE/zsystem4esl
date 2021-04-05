@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_READER_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_READER_H_
 
-#include <esl/utility/Reader.h>
+#include <esl/io/Reader.h>
 
 #include <zsystem/process/FileDescriptor.h>
 
@@ -33,11 +33,14 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-class Reader : public esl::utility::Reader {
+class Reader : public esl::io::Reader {
 public:
 	Reader(zsystem::process::FileDescriptor& fileDescriptor);
 
 	std::size_t read(void* data, std::size_t size) override;
+	std::size_t getSizeReadable() const override;
+	bool hasSize() const override;
+	std::size_t getSize() const override;
 
 private:
 	zsystem::process::FileDescriptor& fileDescriptor;

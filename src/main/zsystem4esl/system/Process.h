@@ -23,12 +23,12 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_H_
 
-#include <zsystem/Process.h>
-
 #include <esl/system/Interface.h>
-#include <esl/system/process/Arguments.h>
-#include <esl/system/process/Environment.h>
+#include <esl/system/Arguments.h>
+#include <esl/system/Environment.h>
 #include <esl/object/Values.h>
+
+#include <zsystem/Process.h>
 
 #include <string>
 #include <memory>
@@ -38,16 +38,23 @@ namespace system {
 
 class Process : public esl::system::Interface::Process {
 public:
-	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::process::Arguments arguments, std::string workingDir, const esl::object::Values<std::string>& setting);
-	static std::unique_ptr<esl::system::Interface::Process> createWithEnvironment(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir, const esl::object::Values<std::string>& setting);
+	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::Arguments arguments, const esl::object::Values<std::string>& setting);
 
-	Process(esl::system::process::Arguments arguments, std::string workingDir);
-	Process(esl::system::process::Arguments arguments, esl::system::process::Environment environment, std::string workingDir);
+	Process(esl::system::Arguments arguments);
 
-	int execute(const esl::system::Interface::Process::ParameterStreams& parameterStreams, esl::system::Interface::Process::ParameterFeatures& parameterFeatures) override;
+	void setWorkingDir(std::string workingDir) override;
+	void setEnvironment(std::unique_ptr<esl::system::Environment> environment) override;
+	const esl::system::Environment* getEnvironment() const override;
+
+	void sendSignal(esl::system::Interface::SignalType signal) override;
+	const void* getNativeHandle() const override;
+
+	int execute(esl::system::Interface::Process::ParameterStreams& parameterStreams, esl::system::Interface::Process::ParameterFeatures& parameterFeatures) override;
 
 private:
     zsystem::Process process;
+    mutable zsystem::Process::Handle handle = zsystem::Process::noHandle;
+    std::unique_ptr<esl::system::Environment> environment;
 };
 
 } /* namespace system */
