@@ -24,37 +24,48 @@ SOFTWARE.
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_H_
 
 #include <esl/system/Interface.h>
+#include <esl/system/Transceiver.h>
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
 #include <esl/object/Values.h>
 
 #include <zsystem/Process.h>
 
+#include <map>
 #include <string>
 #include <memory>
+#include <mutex>
 
 namespace zsystem4esl {
 namespace system {
 
 class Process : public esl::system::Interface::Process {
 public:
-	static std::unique_ptr<esl::system::Interface::Process> create(esl::system::Arguments arguments, const esl::object::Values<std::string>& setting);
+	static std::unique_ptr<esl::system::Interface::Process> create(const esl::object::Values<std::string>& setting);
 
-	Process(esl::system::Arguments arguments);
+	esl::system::Transceiver& operator[](const esl::system::FileDescriptor& fd) override;
 
 	void setWorkingDir(std::string workingDir) override;
 	void setEnvironment(std::unique_ptr<esl::system::Environment> environment) override;
 	const esl::system::Environment* getEnvironment() const override;
 
-	void sendSignal(esl::system::Interface::SignalType signal) override;
+	void addFeature(esl::object::Interface::Object& feature) override;
+
+	int execute(esl::system::Arguments arguments) const override;
+
+	void sendSignal(esl::system::Interface::SignalType signal) const override;
 	const void* getNativeHandle() const override;
 
-	int execute(esl::system::Interface::Process::ParameterStreams& parameterStreams, esl::system::Interface::Process::ParameterFeatures& parameterFeatures) override;
+	zsystem::Process::Handle getHandle() const;
 
 private:
-    zsystem::Process process;
-    mutable zsystem::Process::Handle handle = zsystem::Process::noHandle;
-    std::unique_ptr<esl::system::Environment> environment;
+	std::map<int, esl::system::Transceiver> transceivers;
+	std::string workingDir;
+	std::unique_ptr<esl::system::Environment> environment;
+
+	mutable std::mutex processPtrMutex;
+	mutable zsystem::Process* processPtr = nullptr;
+	mutable zsystem::Process::Handle pid = zsystem::Process::noHandle;
 };
 
 } /* namespace system */
