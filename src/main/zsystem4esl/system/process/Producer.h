@@ -38,7 +38,7 @@ class Producer : public zsystem::process::Producer {
 public:
 	Producer(esl::io::Producer& producer);
 
-	std::size_t write(zsystem::process::FileDescriptor& fileDescriptor) override;
+	std::size_t produce(zsystem::process::FileDescriptor& fileDescriptor) override;
 
 private:
 	esl::io::Producer& producer;

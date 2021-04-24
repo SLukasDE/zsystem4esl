@@ -38,7 +38,7 @@ class Consumer : public zsystem::process::Consumer {
 public:
 	Consumer(esl::io::Consumer& consumer);
 
-	std::size_t read(zsystem::process::FileDescriptor& fileDescriptor) override;
+	bool consume(zsystem::process::FileDescriptor& fileDescriptor) override;
 
 private:
 	esl::io::Consumer& consumer;

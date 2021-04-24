@@ -23,6 +23,7 @@ SOFTWARE.
 #include <zsystem4esl/system/Process.h>
 #include <zsystem4esl/system/process/Consumer.h>
 #include <zsystem4esl/system/process/Producer.h>
+#include <zsystem4esl/Logger.h>
 
 #include <zsystem/process/Arguments.h>
 #include <zsystem/process/Environment.h>
@@ -42,6 +43,10 @@ SOFTWARE.
 
 namespace zsystem4esl {
 namespace system {
+
+namespace {
+Logger logger("zsystem4esl::system");
+}
 
 std::unique_ptr<esl::system::Interface::Process> Process::create(const esl::object::Values<std::string>&) {
 	return std::unique_ptr<esl::system::Interface::Process>(new Process);
@@ -69,57 +74,94 @@ void Process::addFeature(esl::object::Interface::Object& feature) {
 int Process::execute(esl::system::Arguments arguments) const {
 	std::map<std::string, std::unique_ptr<zsystem::process::ConsumerFile>> pathToZSystemConsumerFile;
 	std::map<std::string, std::unique_ptr<zsystem::process::ProducerFile>> pathToZSystemProducerFile;
-
-	for(auto& transceiver : transceivers) {
-		if(!transceiver.second.getInput() && !transceiver.second.getInputPath().empty()) {
-			std::string path = transceiver.second.getInputPath().generic_string();
-
-			std::unique_ptr<zsystem::process::ConsumerFile>& zsystemConsumerFile = pathToZSystemConsumerFile[path];
-			if(!zsystemConsumerFile) {
-				zsystemConsumerFile.reset(new zsystem::process::ConsumerFile(zsystem::process::FileDescriptor::openFile(path, true, false, false)));
-			}
-		}
-
-		if(!transceiver.second.getOutput() && !transceiver.second.getOutputPath().empty()) {
-			std::string path = transceiver.second.getOutputPath().generic_string();
-
-			std::unique_ptr<zsystem::process::ProducerFile>& zsystemProducerFile = pathToZSystemProducerFile[path];
-			if(!zsystemProducerFile) {
-				zsystemProducerFile.reset(new zsystem::process::ProducerFile(zsystem::process::FileDescriptor::openFile(path, false, true, true)));
-			}
-		}
-	}
-
 	zsystem::Process::ParameterStreams zsystemParameterStreams;
 	std::map<esl::io::Consumer*, std::unique_ptr<zsystem::process::Consumer>> eslToZSystemConsumer;
 	std::map<esl::io::Producer*, std::unique_ptr<zsystem::process::Producer>> eslToZSystemProducer;
 
+	logger.trace << "zsystem4esl::...::Process: execute\n";
+
 	for(auto& transceiver : transceivers) {
 		zsystem::Process::ParameterStream& zystemParameterStream = zsystemParameterStreams[transceiver.first];
 
+		switch(transceiver.first) {
+		case 0:
+			logger.trace << "Process tranceiver 0 (stdin).\n";
+			break;
+		case 1:
+			logger.trace << "Process tranceiver 1 (stdout).\n";
+			break;
+		case 2:
+			logger.trace << "Process tranceiver 2 (stderr).\n";
+			break;
+		default:
+			logger.trace << "Process tranceiver " << transceiver.first << ".\n";
+			break;
+		}
+
 		if(transceiver.second.getInput()) {
+			logger.trace << "- got input\n";
+
 			std::unique_ptr<zsystem::process::Consumer>& zsystemConsumer = eslToZSystemConsumer[&transceiver.second.getInput().getConsumer()];
 			if(!zsystemConsumer) {
+				logger.trace << "  - create zsystem-consumer\n";
 				zsystemConsumer.reset(new process::Consumer(transceiver.second.getInput().getConsumer()));
+			}
+			else {
+				logger.trace << "  - zsystem-consumer exists already\n";
 			}
 			zystemParameterStream.consumer = zsystemConsumer.get();
 		}
 		else if(!transceiver.second.getInputPath().empty()) {
 			std::string path = transceiver.second.getInputPath().generic_string();
-			zystemParameterStream.consumer = pathToZSystemConsumerFile[path].get();
+			logger.trace << "  - got input path: \"" << path << "\"\n";
+
+			std::unique_ptr<zsystem::process::ConsumerFile>& zsystemConsumerFile = pathToZSystemConsumerFile[path];
+			if(!zsystemConsumerFile) {
+				logger.trace << "-> create zsystem-consumer-FILE\n";
+				//zsystemConsumerFile.reset(new zsystem::process::ConsumerFile(zsystem::process::FileDescriptor::openFile(path, true, false, false)));
+				zsystemConsumerFile.reset(new zsystem::process::ConsumerFile(zsystem::process::FileDescriptor::openFile(path, false, true, true)));
+			}
+			else {
+				logger.trace << "  - zsystem-consumer-FILE exists already\n";
+			}
+			zystemParameterStream.consumer = zsystemConsumerFile.get();
+		}
+		else {
+			logger.trace << "- no input\n";
 		}
 
 
 		if(transceiver.second.getOutput()) {
+			logger.trace << "- got output\n";
+
 			std::unique_ptr<zsystem::process::Producer>& zsystemProducer = eslToZSystemProducer[&transceiver.second.getOutput().getProducer()];
 			if(!zsystemProducer) {
+				logger.trace << "  - create zsystem-producer\n";
 				zsystemProducer.reset(new process::Producer(transceiver.second.getOutput().getProducer()));
+			}
+			else {
+				logger.trace << "  - zsystem-producer exists already\n";
 			}
 			zystemParameterStream.producer = zsystemProducer.get();
 		}
 		else if(!transceiver.second.getOutputPath().empty()) {
 			std::string path = transceiver.second.getOutputPath().generic_string();
-			zystemParameterStream.producer = pathToZSystemProducerFile[path].get();
+			logger.trace << "- got output path: \"" << path << "\"\n";
+
+			std::unique_ptr<zsystem::process::ProducerFile>& zsystemProducerFile = pathToZSystemProducerFile[path];
+			if(!zsystemProducerFile) {
+				logger.trace << "  - create zsystem-producer-FILE\n";
+				//zsystemProducerFile.reset(new zsystem::process::ProducerFile(zsystem::process::FileDescriptor::openFile(path, false, true, true)));
+				zsystemProducerFile.reset(new zsystem::process::ProducerFile(zsystem::process::FileDescriptor::openFile(path, true, false, false)));
+			}
+			else {
+				logger.trace << "  - zsystem-producer-FILE exists already\n";
+			}
+
+			zystemParameterStream.producer = zsystemProducerFile.get();
+		}
+		else {
+			logger.trace << "- no output\n";
 		}
 	}
 

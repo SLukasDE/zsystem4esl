@@ -31,7 +31,7 @@ Consumer::Consumer(esl::io::Consumer& aConsumer)
 : consumer(aConsumer)
 { }
 
-std::size_t Consumer::read(zsystem::process::FileDescriptor& aFileDescriptor) {
+bool Consumer::consume(zsystem::process::FileDescriptor& aFileDescriptor) {
 	Reader fileDescriptor(aFileDescriptor);
 	return consumer.consume(fileDescriptor);
 }

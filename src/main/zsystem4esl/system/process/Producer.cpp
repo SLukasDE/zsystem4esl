@@ -31,7 +31,7 @@ Producer::Producer(esl::io::Producer& aProducer)
 : producer(aProducer)
 { }
 
-std::size_t Producer::write(zsystem::process::FileDescriptor& aFileDescriptor) {
+std::size_t Producer::produce(zsystem::process::FileDescriptor& aFileDescriptor) {
 	Writer fileDescriptor(aFileDescriptor);
 	return producer.produce(fileDescriptor);
 }
