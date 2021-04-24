@@ -118,7 +118,6 @@ int Process::execute(esl::system::Arguments arguments) const {
 			std::unique_ptr<zsystem::process::ConsumerFile>& zsystemConsumerFile = pathToZSystemConsumerFile[path];
 			if(!zsystemConsumerFile) {
 				logger.trace << "-> create zsystem-consumer-FILE\n";
-				//zsystemConsumerFile.reset(new zsystem::process::ConsumerFile(zsystem::process::FileDescriptor::openFile(path, true, false, false)));
 				zsystemConsumerFile.reset(new zsystem::process::ConsumerFile(zsystem::process::FileDescriptor::openFile(path, false, true, true)));
 			}
 			else {
@@ -151,7 +150,6 @@ int Process::execute(esl::system::Arguments arguments) const {
 			std::unique_ptr<zsystem::process::ProducerFile>& zsystemProducerFile = pathToZSystemProducerFile[path];
 			if(!zsystemProducerFile) {
 				logger.trace << "  - create zsystem-producer-FILE\n";
-				//zsystemProducerFile.reset(new zsystem::process::ProducerFile(zsystem::process::FileDescriptor::openFile(path, false, true, true)));
 				zsystemProducerFile.reset(new zsystem::process::ProducerFile(zsystem::process::FileDescriptor::openFile(path, true, false, false)));
 			}
 			else {
