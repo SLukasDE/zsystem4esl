@@ -35,8 +35,6 @@ SOFTWARE.
 
 #include <esl/io/Consumer.h>
 #include <esl/io/Producer.h>
-#include <esl/io/ProducerReader.h>
-#include <esl/io/ConsumerWriter.h>
 #include <esl/Stacktrace.h>
 
 #include <signal.h> // sigaction(), sigsuspend(), sig*()
