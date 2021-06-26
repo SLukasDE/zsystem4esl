@@ -56,13 +56,12 @@ Module::Module()
 {
 	esl::module::Module::initialize(*this);
 
-	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::system::Interface(
-			getId(), getImplementation(),
-			&system::Process::create,
-			&system::signalHandlerInstall, &system::signalHandlerRemove)));
-	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::stacktrace::Interface(
-			getId(), getImplementation(),
-			&stacktrace::Stacktrace::create)));
+	addInterface(esl::system::Interface::createInterface(
+			getImplementation(),
+			&system::Process::create, &system::signalHandlerInstall, &system::signalHandlerRemove));
+	addInterface(esl::stacktrace::Interface::createInterface(
+			getImplementation(),
+			&stacktrace::Stacktrace::create));
 }
 
 } /* anonymous namespace */

@@ -28,7 +28,6 @@ SOFTWARE.
 #include <esl/stacktrace/Interface.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
-#include <esl/object/Values.h>
 
 #include <ostream>
 #include <vector>
@@ -40,7 +39,7 @@ namespace stacktrace {
 
 class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
 public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const esl::object::Values<std::string>& settings);
+	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const esl::stacktrace::Interface::Settings& settings);
 
 	Stacktrace() = default;
 	~Stacktrace() = default;

@@ -73,11 +73,11 @@ zsystem::Signal::Type translateSignalType(esl::system::Interface::SignalType sig
 }
 }
 
-void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>&) {
+void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::system::Interface::Settings&) {
 	zsystem::SignalHandler::install(translateSignalType(signalType), handler);
 }
 
-void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>&) {
+void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::system::Interface::Settings&) {
 	zsystem::SignalHandler::remove(translateSignalType(signalType), handler);
 }
 

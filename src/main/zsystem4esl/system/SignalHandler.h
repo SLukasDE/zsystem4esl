@@ -30,8 +30,8 @@ SOFTWARE.
 namespace zsystem4esl {
 namespace system {
 
-void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>& setting);
-void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::object::Values<std::string>& setting);
+void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::system::Interface::Settings& setting);
+void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::system::Interface::Settings& setting);
 
 } /* namespace system */
 } /* namespace zsystem4esl */

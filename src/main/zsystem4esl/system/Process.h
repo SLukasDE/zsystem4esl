@@ -27,7 +27,6 @@ SOFTWARE.
 #include <esl/system/Transceiver.h>
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
-#include <esl/object/Values.h>
 
 #include <zsystem/Process.h>
 
@@ -41,7 +40,7 @@ namespace system {
 
 class Process : public esl::system::Interface::Process {
 public:
-	static std::unique_ptr<esl::system::Interface::Process> create(const esl::object::Values<std::string>& setting);
+	static std::unique_ptr<esl::system::Interface::Process> create(const esl::system::Interface::Settings& setting);
 
 	esl::system::Transceiver& operator[](const esl::system::FileDescriptor& fd) override;
 

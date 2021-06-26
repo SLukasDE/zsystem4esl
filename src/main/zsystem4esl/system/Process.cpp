@@ -46,7 +46,7 @@ namespace {
 Logger logger("zsystem4esl::system");
 }
 
-std::unique_ptr<esl::system::Interface::Process> Process::create(const esl::object::Values<std::string>&) {
+std::unique_ptr<esl::system::Interface::Process> Process::create(const esl::system::Interface::Settings&) {
 	return std::unique_ptr<esl::system::Interface::Process>(new Process);
 }
 
