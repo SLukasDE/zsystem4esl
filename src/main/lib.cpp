@@ -1,11 +1,9 @@
 #include <zsystem4esl/Module.h>
 
-#include <esl/module/Library.h>
 #include <esl/Module.h>
 
-extern "C" esl::module::Module* esl__module__library__getModule(const std::string& moduleName) {
-	if(moduleName == "esl") {
-		return &esl::getModule();
+extern "C" void esl__module__library__install(esl::module::Module* module) {
+	if(module != nullptr) {
+		zsystem4esl::Module::install(*module);
 	}
-	return &zsystem4esl::getModule();
 }

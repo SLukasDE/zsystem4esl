@@ -25,58 +25,27 @@ SOFTWARE.
 #include <zsystem4esl/system/Process.h>
 #include <zsystem4esl/system/SignalHandler.h>
 
-#include <esl/Stacktrace.h>
 #include <esl/stacktrace/Interface.h>
 #include <esl/system/Interface.h>
-#include <esl/module/Interface.h>
-
-#include <stdexcept>
-#include <memory>
-#include <new>         // placement new
-#include <type_traits> // aligned_storage
+#include <esl/Module.h>
 
 namespace zsystem4esl {
 
 namespace {
-
-class Module : public esl::module::Module {
-public:
-	Module();
-};
-
-typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
-Module* modulePtr = nullptr;
-
 const char* getImplementation() {
 	return "zsystem4esl";
 }
-
-Module::Module()
-: esl::module::Module()
-{
-	esl::module::Module::initialize(*this);
-
-	addInterface(esl::system::Interface::createInterface(
-			getImplementation(),
-			&system::Process::create, &system::signalHandlerInstall, &system::signalHandlerRemove));
-	addInterface(esl::stacktrace::Interface::createInterface(
-			getImplementation(),
-			&stacktrace::Stacktrace::create));
-}
-
 } /* anonymous namespace */
 
-esl::module::Module& getModule() {
-	if(modulePtr == nullptr) {
-		/* ***************** *
-		 * initialize module *
-		 * ***************** */
+void Module::install(esl::module::Module& module) {
+	esl::setModule(module);
 
-		modulePtr = reinterpret_cast<Module*> (&moduleBuffer);
-		new (modulePtr) Module; // placement new
-	}
-
-	return *modulePtr;
+	module.addInterface(esl::system::Interface::createInterface(
+			getImplementation(),
+			&system::Process::create, &system::signalHandlerInstall, &system::signalHandlerRemove));
+	module.addInterface(esl::stacktrace::Interface::createInterface(
+			getImplementation(),
+			&stacktrace::Stacktrace::create));
 }
 
 } /* namespace zsystem4esl */

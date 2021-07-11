@@ -24,11 +24,13 @@ SOFTWARE.
 #define ZSYSTEM4ESL_MODULE_H_
 
 #include <esl/module/Module.h>
-#include <string>
 
 namespace zsystem4esl {
 
-esl::module::Module& getModule();
+struct Module final {
+	Module() = delete;
+	static void install(esl::module::Module& module);
+};
 
 } /* namespace zsystem4esl */
 
