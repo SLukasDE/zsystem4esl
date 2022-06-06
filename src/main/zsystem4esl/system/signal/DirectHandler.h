@@ -20,40 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-#define ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
+#ifndef ZSYSTEM4ESL_SYSTEM_SIGNAL_DIRECTHANDLER_H_
+#define ZSYSTEM4ESL_SYSTEM_SIGNAL_DIRECTHANDLER_H_
 
-#include <zsystem/Backtrace.h>
+#include <zsystem/Signal.h>
+#include <zsystem/SignalHandler.h>
 
-#include <esl/stacktrace/Interface.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
+#include <esl/object/Interface.h>
 
-#include <memory>
-#include <ostream>
-#include <string>
-#include <utility>
-#include <vector>
+#include <functional>
 
 namespace zsystem4esl {
-namespace stacktrace {
+namespace system {
+namespace signal {
 
-class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
+class DirectHandler : public esl::object::Interface::Object {
 public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
-
-	Stacktrace() = default;
-	~Stacktrace() = default;
-
-	void dump(std::ostream& stream) const override;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
+	DirectHandler(std::function<void()> function, zsystem::Signal::Type signalType);
 
 private:
-	zsystem::Backtrace backtrace;
+	zsystem::SignalHandler::Handle handle;
 };
 
-} /* namespace stacktrace */
+} /* namespace signal */
+} /* namespace system */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */
+#endif /* ZSYSTEM4ESL_SYSTEM_SIGNAL_DIRECTHANDLER_H_ */

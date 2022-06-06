@@ -20,40 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-#define ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-
-#include <zsystem/Backtrace.h>
-
-#include <esl/stacktrace/Interface.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
-
-#include <memory>
-#include <ostream>
-#include <string>
-#include <utility>
-#include <vector>
+#include <zsystem4esl/system/signal/DirectHandler.h>
 
 namespace zsystem4esl {
-namespace stacktrace {
+namespace system {
+namespace signal {
 
-class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
-public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
+DirectHandler::DirectHandler(std::function<void()> function, zsystem::Signal::Type signalType)
+: handle(zsystem::SignalHandler::install(signalType, function))
+{ }
 
-	Stacktrace() = default;
-	~Stacktrace() = default;
-
-	void dump(std::ostream& stream) const override;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
-
-private:
-	zsystem::Backtrace backtrace;
-};
-
-} /* namespace stacktrace */
+} /* namespace signal */
+} /* namespace system */
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */

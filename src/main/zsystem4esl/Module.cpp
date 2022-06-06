@@ -22,11 +22,12 @@ SOFTWARE.
 
 #include <zsystem4esl/Module.h>
 #include <zsystem4esl/stacktrace/Stacktrace.h>
-#include <zsystem4esl/system/Process.h>
-#include <zsystem4esl/system/SignalHandler.h>
+#include <zsystem4esl/system/process/Process.h>
+#include <zsystem4esl/system/signal/Signal.h>
 
 #include <esl/stacktrace/Interface.h>
-#include <esl/system/Interface.h>
+#include <esl/system/process/Interface.h>
+#include <esl/system/signal/Interface.h>
 #include <esl/Module.h>
 
 namespace zsystem4esl {
@@ -40,12 +41,17 @@ const char* getImplementation() {
 void Module::install(esl::module::Module& module) {
 	esl::setModule(module);
 
-	module.addInterface(esl::system::Interface::createInterface(
-			getImplementation(),
-			&system::Process::create, &system::signalHandlerInstall, &system::signalHandlerRemove));
 	module.addInterface(esl::stacktrace::Interface::createInterface(
 			getImplementation(),
 			&stacktrace::Stacktrace::create));
+
+	module.addInterface(esl::system::process::Interface::createInterface(
+			getImplementation(),
+			&system::process::Process::create));
+
+	module.addInterface(esl::system::signal::Interface::createInterface(
+			getImplementation(),
+			&system::signal::Signal::create));
 }
 
 } /* namespace zsystem4esl */

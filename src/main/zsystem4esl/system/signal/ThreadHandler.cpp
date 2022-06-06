@@ -20,40 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-#define ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-
-#include <zsystem/Backtrace.h>
-
-#include <esl/stacktrace/Interface.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
-
-#include <memory>
-#include <ostream>
-#include <string>
-#include <utility>
-#include <vector>
+#include <zsystem4esl/system/signal/ThreadHandler.h>
+#include <zsystem4esl/system/signal/ThreadManager.h>
 
 namespace zsystem4esl {
-namespace stacktrace {
+namespace system {
+namespace signal {
 
-class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
-public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
+ThreadHandler::ThreadHandler(zsystem::Signal::Type aSignalType,
+		std::function<void()> aFunction,
+		std::unique_ptr<ThreadManager>& aInstance,
+		std::mutex& aNewMessageCVMutex,
+		std::condition_variable& aNewMessageCV)
+: signalType(aSignalType),
+  function(aFunction),
+  instance(aInstance),
+  newMessageCVMutex(aNewMessageCVMutex),
+  newMessageCV(aNewMessageCV)
+{ }
 
-	Stacktrace() = default;
-	~Stacktrace() = default;
+ThreadHandler::~ThreadHandler() {
+	if(ThreadManager::uninstallThreadHandler(signalType, *this)) {
+		std::unique_lock<std::mutex> lockNewMessagCVMutex(newMessageCVMutex);
+		newMessageCV.wait(lockNewMessagCVMutex, [this] {
+				return !instance;
+		});
+	}
+}
 
-	void dump(std::ostream& stream) const override;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
+void ThreadHandler::invoke() {
+	function();
+}
 
-private:
-	zsystem::Backtrace backtrace;
-};
-
-} /* namespace stacktrace */
+} /* namespace signal */
+} /* namespace system */
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */

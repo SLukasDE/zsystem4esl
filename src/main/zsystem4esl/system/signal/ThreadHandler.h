@@ -20,20 +20,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_SYSTEM_SIGNALHANDLER_H_
-#define ZSYSTEM4ESL_SYSTEM_SIGNALHANDLER_H_
+#ifndef ZSYSTEM4ESL_SYSTEM_SIGNAL_THREADHANDLER_H_
+#define ZSYSTEM4ESL_SYSTEM_SIGNAL_THREADHANDLER_H_
 
-#include <esl/system/Interface.h>
+#include <esl/object/Interface.h>
 
+#include <zsystem/Signal.h>
+
+#include <condition_variable>
 #include <functional>
+#include <memory>
+#include <mutex>
 
 namespace zsystem4esl {
 namespace system {
+namespace signal {
 
-void signalHandlerInstall(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::system::Interface::Settings& setting);
-void signalHandlerRemove(esl::system::Interface::SignalType signalType, std::function<void()> handler, const esl::system::Interface::Settings& setting);
+class ThreadManager;
 
+class ThreadHandler : public esl::object::Interface::Object {
+public:
+	ThreadHandler(zsystem::Signal::Type aSignalType,
+			std::function<void()> function,
+			std::unique_ptr<ThreadManager>& aInstance,
+			std::mutex& aNewMessageCVMutex,
+			std::condition_variable& aNewMessageCV);
+	~ThreadHandler();
+
+	void invoke();
+
+
+private:
+	zsystem::Signal::Type signalType;
+	std::function<void()> function;
+
+	std::unique_ptr<ThreadManager>& instance;
+	std::mutex& newMessageCVMutex;
+	std::condition_variable& newMessageCV;
+};
+
+} /* namespace signal */
 } /* namespace system */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_SYSTEM_SIGNALHANDLER_H_ */
+#endif /* ZSYSTEM4ESL_SYSTEM_SIGNAL_THREADHANDLER_H_ */

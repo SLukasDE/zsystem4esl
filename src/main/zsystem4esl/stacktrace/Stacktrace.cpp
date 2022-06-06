@@ -25,7 +25,7 @@ SOFTWARE.
 namespace zsystem4esl {
 namespace stacktrace {
 
-std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create(const esl::stacktrace::Interface::Settings&) {
+std::unique_ptr<esl::stacktrace::Interface::Stacktrace> Stacktrace::create(const std::vector<std::pair<std::string, std::string>>&) {
 	return std::unique_ptr<esl::stacktrace::Interface::Stacktrace>(new Stacktrace);
 }
 

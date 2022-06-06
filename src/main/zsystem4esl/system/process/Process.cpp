@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/system/Process.h>
+#include <zsystem4esl/system/process/Process.h>
 #include <zsystem4esl/system/process/Consumer.h>
 #include <zsystem4esl/system/process/Producer.h>
 #include <zsystem4esl/Logger.h>
@@ -35,22 +35,24 @@ SOFTWARE.
 
 #include <esl/io/Consumer.h>
 #include <esl/io/Producer.h>
-#include <esl/Stacktrace.h>
+#include <esl/stacktrace/Stacktrace.h>
 
 #include <signal.h> // sigaction(), sigsuspend(), sig*()
 
+
 namespace zsystem4esl {
 namespace system {
+namespace process {
 
 namespace {
-Logger logger("zsystem4esl::system");
+Logger logger("zsystem4esl::system::process::Process");
 }
 
-std::unique_ptr<esl::system::Interface::Process> Process::create(const esl::system::Interface::Settings&) {
-	return std::unique_ptr<esl::system::Interface::Process>(new Process);
+std::unique_ptr<esl::system::process::Interface::Process> Process::create(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<esl::system::process::Interface::Process>(new Process);
 }
 
-esl::system::Transceiver& Process::operator[](const esl::system::FileDescriptor& fd) {
+esl::system::process::Transceiver& Process::operator[](const esl::system::process::FileDescriptor& fd) {
 	return transceivers[fd.getId()];
 }
 
@@ -58,18 +60,18 @@ void Process::setWorkingDir(std::string aWorkingDir) {
 	workingDir = std::move(aWorkingDir);
 }
 
-void Process::setEnvironment(std::unique_ptr<esl::system::Environment> aEnvironment) {
+void Process::setEnvironment(std::unique_ptr<esl::system::process::Environment> aEnvironment) {
 	environment = std::move(aEnvironment);
 }
 
-const esl::system::Environment* Process::getEnvironment() const {
+const esl::system::process::Environment* Process::getEnvironment() const {
 	return environment.get();
 }
 
 void Process::addFeature(esl::object::Interface::Object& feature) {
 }
 
-int Process::execute(esl::system::Arguments arguments) const {
+int Process::execute(esl::system::process::Arguments arguments) const {
 	std::map<std::string, std::unique_ptr<zsystem::process::ConsumerFile>> pathToZSystemConsumerFile;
 	std::map<std::string, std::unique_ptr<zsystem::process::ProducerFile>> pathToZSystemProducerFile;
 	zsystem::Process::ParameterStreams zsystemParameterStreams;
@@ -186,67 +188,63 @@ int Process::execute(esl::system::Arguments arguments) const {
 	return rc;
 }
 
-void Process::sendSignal(esl::system::Interface::SignalType signal) const {
+void Process::sendSignal(const esl::utility::Signal& signal) const {
 	zsystem::Process::Handle handle = getHandle();
 
 	if(handle == zsystem::Process::noHandle) {
 		return;
 	}
-	switch(signal) {
-	case esl::system::Interface::SignalType::hangUp:
+	if(signal == esl::utility::Signal::Type::hangUp) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::hangUp);
-		break;
-	case esl::system::Interface::SignalType::interrupt:
+	}
+	else if(signal == esl::utility::Signal::Type::interrupt) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::interrupt);
-		break;
-	case esl::system::Interface::SignalType::quit:
+	}
+	else if(signal == esl::utility::Signal::Type::quit) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::quit);
-		break;
-	case esl::system::Interface::SignalType::ill:
+	}
+	else if(signal == esl::utility::Signal::Type::ill) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::ill);
-		break;
-	case esl::system::Interface::SignalType::trap:
+	}
+	else if(signal == esl::utility::Signal::Type::trap) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::trap);
-		break;
-	case esl::system::Interface::SignalType::abort:
+	}
+	else if(signal == esl::utility::Signal::Type::abort) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::abort);
-		break;
-	case esl::system::Interface::SignalType::busError:
+	}
+	else if(signal == esl::utility::Signal::Type::busError) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::busError);
-		break;
-	case esl::system::Interface::SignalType::floatingPointException:
+	}
+	else if(signal == esl::utility::Signal::Type::floatingPointException) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::floatingPointException);
-		break;
-	case esl::system::Interface::SignalType::segmentationViolation:
+	}
+	else if(signal == esl::utility::Signal::Type::segmentationViolation) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::segmentationViolation);
-		break;
-	case esl::system::Interface::SignalType::user1:
+	}
+	else if(signal == esl::utility::Signal::Type::user1) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::user1);
-		break;
-	case esl::system::Interface::SignalType::user2:
+	}
+	else if(signal == esl::utility::Signal::Type::user2) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::user2);
-		break;
-	case esl::system::Interface::SignalType::alarm:
+	}
+	else if(signal == esl::utility::Signal::Type::alarm) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::alarm);
-		break;
-	case esl::system::Interface::SignalType::child:
+	}
+	else if(signal == esl::utility::Signal::Type::child) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::child);
-		break;
-	case esl::system::Interface::SignalType::stackFault:
+	}
+	else if(signal == esl::utility::Signal::Type::stackFault) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::stackFault);
-		break;
-	case esl::system::Interface::SignalType::terminate:
+	}
+	else if(signal == esl::utility::Signal::Type::terminate) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::terminate);
-		break;
-	case esl::system::Interface::SignalType::pipe:
+	}
+	else if(signal == esl::utility::Signal::Type::pipe) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::pipe);
-		break;
-	case esl::system::Interface::SignalType::kill:
+	}
+	else if(signal == esl::utility::Signal::Type::kill) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::kill);
-		break;
-	default:
-		break;
-	};
+	}
 }
 
 const void* Process::getNativeHandle() const {
@@ -259,5 +257,6 @@ zsystem::Process::Handle Process::getHandle() const {
 	return processPtr ? processPtr->getHandle() : zsystem::Process::noHandle;
 }
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace zsystem4esl */

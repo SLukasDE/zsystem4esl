@@ -20,40 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-#define ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
+#ifndef ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
+#define ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 
-#include <zsystem/Backtrace.h>
+#include <esl/system/signal/Interface.h>
+#include <esl/utility/Signal.h>
+#include <esl/object/Interface.h>
 
-#include <esl/stacktrace/Interface.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
-
+#include <functional>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace zsystem4esl {
-namespace stacktrace {
+namespace system {
+namespace signal {
 
-class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
+class Signal : public esl::system::signal::Interface::Signal {
 public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
+	static std::unique_ptr<esl::system::signal::Interface::Signal> create(const std::vector<std::pair<std::string, std::string>>& settings);
 
-	Stacktrace() = default;
-	~Stacktrace() = default;
+	static inline const char* getImplementation() {
+		return "zsystem4esl";
+	}
 
-	void dump(std::ostream& stream) const override;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
+	Signal(const std::vector<std::pair<std::string, std::string>>& settings);
+
+	esl::system::signal::Interface::Signal::Handler createHandler(const esl::utility::Signal& signal, std::function<void()> function) override;
 
 private:
-	zsystem::Backtrace backtrace;
+	bool threadedSignalHandler = true;
 };
 
-} /* namespace stacktrace */
+} /* namespace signal */
+} /* namespace system */
 } /* namespace zsystem4esl */
 
-#endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */
+#endif /* ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_ */
