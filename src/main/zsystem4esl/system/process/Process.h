@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_
 
-#include <esl/system/process/Interface.h>
+#include <esl/system/process/IProcess.h>
 #include <esl/system/process/Transceiver.h>
 #include <esl/system/process/Arguments.h>
 #include <esl/system/process/Environment.h>
@@ -41,9 +41,9 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-class Process : public esl::system::process::Interface::Process {
+class Process : public esl::system::process::IProcess {
 public:
-	static std::unique_ptr<esl::system::process::Interface::Process> create(const std::vector<std::pair<std::string, std::string>>& setting);
+	static std::unique_ptr<esl::system::process::IProcess> create(const std::vector<std::pair<std::string, std::string>>& setting);
 
 	esl::system::process::Transceiver& operator[](const esl::system::process::FileDescriptor& fd) override;
 
@@ -51,7 +51,7 @@ public:
 	void setEnvironment(std::unique_ptr<esl::system::process::Environment> environment) override;
 	const esl::system::process::Environment* getEnvironment() const override;
 
-	void addFeature(esl::object::Interface::Object& feature) override;
+	void addFeature(esl::object::IObject& feature) override;
 
 	int execute(esl::system::process::Arguments arguments) const override;
 

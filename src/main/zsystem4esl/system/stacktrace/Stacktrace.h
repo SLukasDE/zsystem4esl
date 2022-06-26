@@ -20,15 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
-#define ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_
+#ifndef ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACE_H_
+#define ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACE_H_
 
 #include <zsystem/Backtrace.h>
 
-#include <esl/stacktrace/Interface.h>
+#include <esl/system/stacktrace/IStacktrace.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 
+#include <list>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -36,24 +37,30 @@ SOFTWARE.
 #include <vector>
 
 namespace zsystem4esl {
+namespace system {
 namespace stacktrace {
 
-class Stacktrace : public esl::stacktrace::Interface::Stacktrace {
+class Stacktrace : public esl::system::stacktrace::IStacktrace {
 public:
-	static std::unique_ptr<esl::stacktrace::Interface::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
+	static std::unique_ptr<esl::system::stacktrace::IStacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	Stacktrace() = default;
 	~Stacktrace() = default;
 
 	void dump(std::ostream& stream) const override;
 	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::stacktrace::Interface::Stacktrace> clone() const override;
+	void dumpFull(std::ostream& stream) const override;
+	void dumpFull(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
+	std::unique_ptr<esl::system::stacktrace::IStacktrace> clone() const override;
 
 private:
 	zsystem::Backtrace backtrace;
+
+	std::list<std::string> createElementsReduced() const;
 };
 
 } /* namespace stacktrace */
+} /* namespace system */
 } /* namespace zsystem4esl */
 
 #endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */

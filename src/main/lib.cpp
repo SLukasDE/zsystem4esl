@@ -20,12 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Module.h>
+#include <zsystem4esl/Plugin.h>
 
-#include <esl/Module.h>
+#include <esl/plugin/Registry.h>
 
-extern "C" void esl__module__library__install(esl::module::Module* module) {
-	if(module != nullptr) {
-		zsystem4esl::Module::install(*module);
+extern "C" void esl__plugin__library__install(esl::plugin::Registry* registry, const char* data) {
+	if(registry != nullptr) {
+		zsystem4esl::Plugin::install(*registry, data);
 	}
 }

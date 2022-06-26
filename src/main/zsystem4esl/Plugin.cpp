@@ -20,18 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ZSYSTEM4ESL_MODULE_H_
-#define ZSYSTEM4ESL_MODULE_H_
+#include <zsystem4esl/Plugin.h>
+#include <zsystem4esl/system/process/Process.h>
+#include <zsystem4esl/system/signal/Signal.h>
+#include <zsystem4esl/system/stacktrace/Stacktrace.h>
 
-#include <esl/module/Module.h>
+#include <esl/system/process/IProcess.h>
+#include <esl/system/signal/ISignal.h>
+#include <esl/system/stacktrace/IStacktrace.h>
+
+#include <memory>
 
 namespace zsystem4esl {
 
-struct Module final {
-	Module() = delete;
-	static void install(esl::module::Module& module);
-};
+void Plugin::install(esl::plugin::Registry& registry, const char* data) {
+	esl::plugin::Registry::set(registry);
+
+	registry.addPlugin(std::unique_ptr<const esl::plugin::BasePlugin>(new esl::system::process::IProcess::Plugin(
+			"zsystem4esl/system/process/Process",
+			&system::process::Process::create)));
+
+	registry.addPlugin(std::unique_ptr<const esl::plugin::BasePlugin>(new esl::system::signal::ISignal::Plugin(
+			"zsystem4esl/system/signal/Signal",
+			&system::signal::Signal::create)));
+
+	registry.addPlugin(std::unique_ptr<const esl::plugin::BasePlugin>(new esl::system::stacktrace::IStacktrace::Plugin(
+			"zsystem4esl/system/stacktrace/Stacktrace",
+			&system::stacktrace::Stacktrace::create)));
+}
 
 } /* namespace zsystem4esl */
-
-#endif /* ZSYSTEM4ESL_MODULE_H_ */

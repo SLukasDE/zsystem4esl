@@ -20,38 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Module.h>
-#include <zsystem4esl/stacktrace/Stacktrace.h>
-#include <zsystem4esl/system/process/Process.h>
-#include <zsystem4esl/system/signal/Signal.h>
+#ifndef ZSYSTEM4ESL_PLUGIN_H_
+#define ZSYSTEM4ESL_PLUGIN_H_
 
-#include <esl/stacktrace/Interface.h>
-#include <esl/system/process/Interface.h>
-#include <esl/system/signal/Interface.h>
-#include <esl/Module.h>
+#include <esl/plugin/Registry.h>
 
 namespace zsystem4esl {
 
-namespace {
-const char* getImplementation() {
-	return "zsystem4esl";
-}
-} /* anonymous namespace */
-
-void Module::install(esl::module::Module& module) {
-	esl::setModule(module);
-
-	module.addInterface(esl::stacktrace::Interface::createInterface(
-			getImplementation(),
-			&stacktrace::Stacktrace::create));
-
-	module.addInterface(esl::system::process::Interface::createInterface(
-			getImplementation(),
-			&system::process::Process::create));
-
-	module.addInterface(esl::system::signal::Interface::createInterface(
-			getImplementation(),
-			&system::signal::Signal::create));
-}
+class Plugin final {
+public:
+	Plugin() = delete;
+	static void install(esl::plugin::Registry& registry, const char* data);
+};
 
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_PLUGIN_H_ */

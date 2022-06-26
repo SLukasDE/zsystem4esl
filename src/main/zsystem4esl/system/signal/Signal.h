@@ -23,9 +23,9 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 #define ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 
-#include <esl/system/signal/Interface.h>
+#include <esl/system/signal/ISignal.h>
 #include <esl/utility/Signal.h>
-#include <esl/object/Interface.h>
+#include <esl/object/IObject.h>
 
 #include <functional>
 #include <memory>
@@ -37,9 +37,9 @@ namespace zsystem4esl {
 namespace system {
 namespace signal {
 
-class Signal : public esl::system::signal::Interface::Signal {
+class Signal : public esl::system::signal::ISignal {
 public:
-	static std::unique_ptr<esl::system::signal::Interface::Signal> create(const std::vector<std::pair<std::string, std::string>>& settings);
+	static std::unique_ptr<esl::system::signal::ISignal> create(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	static inline const char* getImplementation() {
 		return "zsystem4esl";
@@ -47,7 +47,7 @@ public:
 
 	Signal(const std::vector<std::pair<std::string, std::string>>& settings);
 
-	esl::system::signal::Interface::Signal::Handler createHandler(const esl::utility::Signal& signal, std::function<void()> function) override;
+	esl::system::signal::ISignal::Handler createHandler(const esl::utility::Signal& signal, std::function<void()> function) override;
 
 private:
 	bool threadedSignalHandler = true;

@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_SIGNAL_THREADHANDLER_H_
 #define ZSYSTEM4ESL_SYSTEM_SIGNAL_THREADHANDLER_H_
 
-#include <esl/object/Interface.h>
+#include <esl/object/IObject.h>
 
 #include <zsystem/Signal.h>
 
@@ -38,7 +38,7 @@ namespace signal {
 
 class ThreadManager;
 
-class ThreadHandler : public esl::object::Interface::Object {
+class ThreadHandler : public esl::object::IObject {
 public:
 	ThreadHandler(zsystem::Signal::Type aSignalType,
 			std::function<void()> function,

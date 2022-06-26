@@ -35,7 +35,7 @@ SOFTWARE.
 
 #include <esl/io/Consumer.h>
 #include <esl/io/Producer.h>
-#include <esl/stacktrace/Stacktrace.h>
+//#include <esl/system/stacktrace/IStacktrace.h>
 
 #include <signal.h> // sigaction(), sigsuspend(), sig*()
 
@@ -48,8 +48,8 @@ namespace {
 Logger logger("zsystem4esl::system::process::Process");
 }
 
-std::unique_ptr<esl::system::process::Interface::Process> Process::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<esl::system::process::Interface::Process>(new Process);
+std::unique_ptr<esl::system::process::IProcess> Process::create(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<esl::system::process::IProcess>(new Process);
 }
 
 esl::system::process::Transceiver& Process::operator[](const esl::system::process::FileDescriptor& fd) {
@@ -68,7 +68,7 @@ const esl::system::process::Environment* Process::getEnvironment() const {
 	return environment.get();
 }
 
-void Process::addFeature(esl::object::Interface::Object& feature) {
+void Process::addFeature(esl::object::IObject& feature) {
 }
 
 int Process::execute(esl::system::process::Arguments arguments) const {
