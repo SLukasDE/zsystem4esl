@@ -26,8 +26,8 @@ namespace zsystem4esl {
 namespace system {
 namespace stacktrace {
 
-std::unique_ptr<esl::system::stacktrace::IStacktrace> Stacktrace::create(const std::vector<std::pair<std::string, std::string>>&) {
-	return std::unique_ptr<esl::system::stacktrace::IStacktrace>(new Stacktrace);
+std::unique_ptr<esl::system::Stacktrace> Stacktrace::create(const std::vector<std::pair<std::string, std::string>>&) {
+	return std::unique_ptr<esl::system::Stacktrace>(new Stacktrace);
 }
 
 void Stacktrace::dump(std::ostream& stream) const {
@@ -59,8 +59,8 @@ void Stacktrace::dumpFull(esl::logging::StreamReal& stream, esl::logging::Locati
 	}
 }
 
-std::unique_ptr<esl::system::stacktrace::IStacktrace> Stacktrace::clone() const {
-	return std::unique_ptr<esl::system::stacktrace::IStacktrace>(new Stacktrace(*this));
+std::unique_ptr<esl::system::Stacktrace> Stacktrace::clone() const {
+	return std::unique_ptr<esl::system::Stacktrace>(new Stacktrace(*this));
 }
 
 std::list<std::string> Stacktrace::createElementsReduced() const {

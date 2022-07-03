@@ -45,14 +45,14 @@ namespace system {
 namespace process {
 
 namespace {
-Logger logger("zsystem4esl::system::process::Process");
+Logger logger("zsystem4esl::system::Process");
 }
 
-std::unique_ptr<esl::system::process::IProcess> Process::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<esl::system::process::IProcess>(new Process);
+std::unique_ptr<esl::system::Process> Process::create(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<esl::system::Process>(new Process);
 }
 
-esl::system::process::Transceiver& Process::operator[](const esl::system::process::FileDescriptor& fd) {
+esl::system::Transceiver& Process::operator[](const esl::system::FileDescriptor& fd) {
 	return transceivers[fd.getId()];
 }
 
@@ -60,18 +60,18 @@ void Process::setWorkingDir(std::string aWorkingDir) {
 	workingDir = std::move(aWorkingDir);
 }
 
-void Process::setEnvironment(std::unique_ptr<esl::system::process::Environment> aEnvironment) {
+void Process::setEnvironment(std::unique_ptr<esl::system::Environment> aEnvironment) {
 	environment = std::move(aEnvironment);
 }
 
-const esl::system::process::Environment* Process::getEnvironment() const {
+const esl::system::Environment* Process::getEnvironment() const {
 	return environment.get();
 }
 
-void Process::addFeature(esl::object::IObject& feature) {
+void Process::addFeature(esl::object::Object& feature) {
 }
 
-int Process::execute(esl::system::process::Arguments arguments) const {
+int Process::execute(esl::system::Arguments arguments) const {
 	std::map<std::string, std::unique_ptr<zsystem::process::ConsumerFile>> pathToZSystemConsumerFile;
 	std::map<std::string, std::unique_ptr<zsystem::process::ProducerFile>> pathToZSystemProducerFile;
 	zsystem::Process::ParameterStreams zsystemParameterStreams;

@@ -23,10 +23,11 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_
 
-#include <esl/system/process/IProcess.h>
-#include <esl/system/process/Transceiver.h>
-#include <esl/system/process/Arguments.h>
-#include <esl/system/process/Environment.h>
+#include <esl/system/Process.h>
+#include <esl/system/Transceiver.h>
+#include <esl/system/Arguments.h>
+#include <esl/system/Environment.h>
+#include <esl/object/Object.h>
 
 #include <zsystem/Process.h>
 
@@ -41,19 +42,19 @@ namespace zsystem4esl {
 namespace system {
 namespace process {
 
-class Process : public esl::system::process::IProcess {
+class Process : public esl::system::Process {
 public:
-	static std::unique_ptr<esl::system::process::IProcess> create(const std::vector<std::pair<std::string, std::string>>& setting);
+	static std::unique_ptr<esl::system::Process> create(const std::vector<std::pair<std::string, std::string>>& setting);
 
-	esl::system::process::Transceiver& operator[](const esl::system::process::FileDescriptor& fd) override;
+	esl::system::Transceiver& operator[](const esl::system::FileDescriptor& fd) override;
 
 	void setWorkingDir(std::string workingDir) override;
-	void setEnvironment(std::unique_ptr<esl::system::process::Environment> environment) override;
-	const esl::system::process::Environment* getEnvironment() const override;
+	void setEnvironment(std::unique_ptr<esl::system::Environment> environment) override;
+	const esl::system::Environment* getEnvironment() const override;
 
-	void addFeature(esl::object::IObject& feature) override;
+	void addFeature(esl::object::Object& feature) override;
 
-	int execute(esl::system::process::Arguments arguments) const override;
+	int execute(esl::system::Arguments arguments) const override;
 
 	void sendSignal(const esl::utility::Signal& signal) const override;
 	const void* getNativeHandle() const override;
@@ -61,9 +62,9 @@ public:
 	zsystem::Process::Handle getHandle() const;
 
 private:
-	std::map<int, esl::system::process::Transceiver> transceivers;
+	std::map<int, esl::system::Transceiver> transceivers;
 	std::string workingDir;
-	std::unique_ptr<esl::system::process::Environment> environment;
+	std::unique_ptr<esl::system::Environment> environment;
 
 	mutable std::mutex processPtrMutex;
 	mutable zsystem::Process* processPtr = nullptr;

@@ -25,9 +25,9 @@ SOFTWARE.
 #include <zsystem4esl/system/signal/Signal.h>
 #include <zsystem4esl/system/stacktrace/Stacktrace.h>
 
-#include <esl/system/process/IProcess.h>
-#include <esl/system/signal/ISignal.h>
-#include <esl/system/stacktrace/IStacktrace.h>
+#include <esl/system/Process.h>
+#include <esl/system/Signal.h>
+#include <esl/system/Stacktrace.h>
 
 #include <memory>
 
@@ -36,17 +36,17 @@ namespace zsystem4esl {
 void Plugin::install(esl::plugin::Registry& registry, const char* data) {
 	esl::plugin::Registry::set(registry);
 
-	registry.addPlugin(std::unique_ptr<const esl::plugin::BasePlugin>(new esl::system::process::IProcess::Plugin(
+	registry.addPlugin<esl::system::Process>(
 			"zsystem4esl/system/process/Process",
-			&system::process::Process::create)));
+			&system::process::Process::create);
 
-	registry.addPlugin(std::unique_ptr<const esl::plugin::BasePlugin>(new esl::system::signal::ISignal::Plugin(
+	registry.addPlugin<esl::system::Signal>(
 			"zsystem4esl/system/signal/Signal",
-			&system::signal::Signal::create)));
+			&system::signal::Signal::create);
 
-	registry.addPlugin(std::unique_ptr<const esl::plugin::BasePlugin>(new esl::system::stacktrace::IStacktrace::Plugin(
+	registry.addPlugin<esl::system::Stacktrace>(
 			"zsystem4esl/system/stacktrace/Stacktrace",
-			&system::stacktrace::Stacktrace::create)));
+			&system::stacktrace::Stacktrace::create);
 }
 
 } /* namespace zsystem4esl */

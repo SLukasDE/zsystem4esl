@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <zsystem/Backtrace.h>
 
-#include <esl/system/stacktrace/IStacktrace.h>
+#include <esl/system/Stacktrace.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 
@@ -40,9 +40,9 @@ namespace zsystem4esl {
 namespace system {
 namespace stacktrace {
 
-class Stacktrace : public esl::system::stacktrace::IStacktrace {
+class Stacktrace : public esl::system::Stacktrace {
 public:
-	static std::unique_ptr<esl::system::stacktrace::IStacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
+	static std::unique_ptr<esl::system::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	Stacktrace() = default;
 	~Stacktrace() = default;
@@ -51,7 +51,7 @@ public:
 	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
 	void dumpFull(std::ostream& stream) const override;
 	void dumpFull(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
-	std::unique_ptr<esl::system::stacktrace::IStacktrace> clone() const override;
+	std::unique_ptr<esl::system::Stacktrace> clone() const override;
 
 private:
 	zsystem::Backtrace backtrace;

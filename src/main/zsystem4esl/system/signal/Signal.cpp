@@ -27,7 +27,7 @@ SOFTWARE.
 #include <zsystem/Signal.h>
 
 #include <esl/utility/String.h>
-#include <esl/system/stacktrace/IStacktrace.h>
+#include <esl/system/Stacktrace.h>
 
 #include <condition_variable>
 #include <list>
@@ -42,8 +42,8 @@ namespace zsystem4esl {
 namespace system {
 namespace signal {
 
-std::unique_ptr<esl::system::signal::ISignal> Signal::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<esl::system::signal::ISignal>(new Signal(settings));
+std::unique_ptr<esl::system::Signal> Signal::create(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<esl::system::Signal>(new Signal(settings));
 }
 
 Signal::Signal(const std::vector<std::pair<std::string, std::string>>& settings) {
@@ -52,7 +52,7 @@ Signal::Signal(const std::vector<std::pair<std::string, std::string>>& settings)
     for(const auto& setting : settings) {
 		if(setting.first == "is-threaded") {
 			if(hasThreadedSignalHandler) {
-		        throw esl::system::stacktrace::IStacktrace::add(std::runtime_error("multiple definition of attribute 'is-threaded'."));
+		        throw esl::system::Stacktrace::add(std::runtime_error("multiple definition of attribute 'is-threaded'."));
 			}
 			hasThreadedSignalHandler = true;
 			std::string value = esl::utility::String::toLower(setting.second);
@@ -63,17 +63,17 @@ Signal::Signal(const std::vector<std::pair<std::string, std::string>>& settings)
 				threadedSignalHandler = false;
 			}
 			else {
-		    	throw esl::system::stacktrace::IStacktrace::add(std::runtime_error("Invalid value \"" + setting.second + "\" for attribute 'is-threaded'"));
+		    	throw esl::system::Stacktrace::add(std::runtime_error("Invalid value \"" + setting.second + "\" for attribute 'is-threaded'"));
 			}
 		}
 		else {
-	        throw esl::system::stacktrace::IStacktrace::add(std::runtime_error("unknown attribute '\"" + setting.first + "\"'."));
+	        throw esl::system::Stacktrace::add(std::runtime_error("unknown attribute '\"" + setting.first + "\"'."));
 		}
     }
 }
 
-esl::system::signal::ISignal::Handler Signal::createHandler(const esl::utility::Signal& signal, std::function<void()> function) {
-	esl::system::signal::ISignal::Handler signalHandler;
+esl::system::Signal::Handler Signal::createHandler(const esl::utility::Signal& signal, std::function<void()> function) {
+	esl::system::Signal::Handler signalHandler;
 
 	zsystem::Signal::Type signalType = zsystem::Signal::Type::unknown;
 	if(signal == esl::utility::Signal::Type::hangUp) {
@@ -129,10 +129,10 @@ esl::system::signal::ISignal::Handler Signal::createHandler(const esl::utility::
 	}
 
 	if(threadedSignalHandler) {
-		signalHandler = esl::system::signal::ISignal::Handler(ThreadManager::installThreadHandler(function, signalType).release());
+		signalHandler = esl::system::Signal::Handler(ThreadManager::installThreadHandler(function, signalType).release());
 	}
 	else {
-		signalHandler = esl::system::signal::ISignal::Handler(new DirectHandler(function, signalType));
+		signalHandler = esl::system::Signal::Handler(new DirectHandler(function, signalType));
 	}
 
 	return signalHandler;

@@ -26,7 +26,7 @@ SOFTWARE.
 #include <zsystem/Signal.h>
 #include <zsystem/SignalHandler.h>
 
-#include <esl/object/IObject.h>
+#include <esl/object/Object.h>
 
 #include <functional>
 
@@ -34,7 +34,7 @@ namespace zsystem4esl {
 namespace system {
 namespace signal {
 
-class DirectHandler : public esl::object::IObject {
+class DirectHandler : public esl::object::Object {
 public:
 	DirectHandler(std::function<void()> function, zsystem::Signal::Type signalType);
 
