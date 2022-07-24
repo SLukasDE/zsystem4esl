@@ -44,8 +44,7 @@ class Stacktrace : public esl::system::Stacktrace {
 public:
 	static std::unique_ptr<esl::system::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
 
-	Stacktrace() = default;
-	~Stacktrace() = default;
+	Stacktrace(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	void dump(std::ostream& stream) const override;
 	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
@@ -54,6 +53,10 @@ public:
 	std::unique_ptr<esl::system::Stacktrace> clone() const override;
 
 private:
+	unsigned int skipEntries = 3;
+	bool showAddress = true;
+	bool showFunction = true;
+
 	zsystem::Backtrace backtrace;
 
 	std::list<std::string> createElementsReduced() const;
