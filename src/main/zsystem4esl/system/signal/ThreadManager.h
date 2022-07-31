@@ -28,7 +28,6 @@ SOFTWARE.
 #include <zsystem/SignalHandler.h>
 #include <zsystem/Signal.h>
 
-//#include <esl/object/IObject.h>
 #include <esl/utility/Signal.h>
 
 #include <functional>

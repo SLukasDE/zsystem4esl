@@ -33,19 +33,19 @@ namespace {
 std::mutex instanceMutex;
 std::unique_ptr<ThreadManager> instance;
 
-std::mutex newMessagCVMutex;
-std::condition_variable newMessagCV;
+std::mutex newMessageCVMutex;
+std::condition_variable newMessageCV;
 } /* anonymous namespace */
 
 std::unique_ptr<ThreadHandler> ThreadManager::installThreadHandler(std::function<void()> function, zsystem::Signal::Type signalType) {
 	std::lock_guard<std::mutex> lockInstanceMutext(instanceMutex);
 	if(!instance) {
-		std::unique_lock<std::mutex> lockNewMessagCVMutex(newMessagCVMutex);
+		std::unique_lock<std::mutex> lockNewMessagCVMutex(newMessageCVMutex);
 
 		instance.reset(new ThreadManager);
 		std::thread(ThreadManager::run).detach();
 
-		newMessagCV.wait(lockNewMessagCVMutex);
+		newMessageCV.wait(lockNewMessagCVMutex);
 	}
 
 	std::lock_guard<std::mutex> lockRegistryMutex(instance->registryMutex);
@@ -57,7 +57,7 @@ std::unique_ptr<ThreadHandler> ThreadManager::installThreadHandler(std::function
 
 	std::set<ThreadHandler*>& threadHandlers = registryInsertResult.first->second.second;
 
-	std::unique_ptr<ThreadHandler> threadHandler(new ThreadHandler(signalType, function, instance, newMessagCVMutex, newMessagCV));
+	std::unique_ptr<ThreadHandler> threadHandler(new ThreadHandler(signalType, function, instance, newMessageCVMutex, newMessageCV));
 	threadHandlers.insert(threadHandler.get());
 
 	return threadHandler;
@@ -88,7 +88,7 @@ bool ThreadManager::uninstallThreadHandler(zsystem::Signal::Type signalType, Thr
 			instance->messages.push_back(std::unique_ptr<zsystem::Signal::Type>(nullptr));
 		}
 
-		newMessagCV.notify_one();
+		newMessageCV.notify_one();
 		return true;
 	}
 	return false;
@@ -100,15 +100,15 @@ void ThreadManager::signalHandler(zsystem::Signal::Type signalType) {
 	std::lock_guard<std::mutex> lockMessagesMutex(instance->messagesMutex);
 	instance->messages.push_back(std::unique_ptr<zsystem::Signal::Type>(new zsystem::Signal::Type(signalType)));
 
-	newMessagCV.notify_one();
+	newMessageCV.notify_one();
 }
 
 void ThreadManager::run() {
-	newMessagCV.notify_one();
+	newMessageCV.notify_one();
 
-	std::unique_lock<std::mutex> lockNewMessagCVMutex(newMessagCVMutex);
+	std::unique_lock<std::mutex> lockNewMessageCVMutex(newMessageCVMutex);
 	while(true) {
-		newMessagCV.wait(lockNewMessagCVMutex, [] {
+		newMessageCV.wait(lockNewMessageCVMutex, [] {
 				std::lock_guard<std::mutex> lockMessagesMutex(instance->messagesMutex);
 				return !instance->messages.empty();
 		});
@@ -142,8 +142,8 @@ void ThreadManager::run() {
 			}
 			if(isEmpty) {
 				instance.reset();
-				lockNewMessagCVMutex.unlock();
-				newMessagCV.notify_one();
+				lockNewMessageCVMutex.unlock();
+				newMessageCV.notify_one();
 				return;
 			}
 		}
