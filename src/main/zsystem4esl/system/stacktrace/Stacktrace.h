@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,12 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACE_H_
 #define ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACE_H_
 
-#include <zsystem/Backtrace.h>
-
+#include <esl/monitoring/Streams.h>
+#include <esl/system/DefaultStacktraceFactory.h>
 #include <esl/system/Stacktrace.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
+#include <esl/system/StacktraceFactory.h>
+
+#include <zsystem/Backtrace.h>
 
 #include <list>
 #include <memory>
@@ -37,25 +38,22 @@ SOFTWARE.
 #include <vector>
 
 namespace zsystem4esl {
+inline namespace v1_6 {
 namespace system {
 namespace stacktrace {
 
 class Stacktrace : public esl::system::Stacktrace {
 public:
-	static std::unique_ptr<esl::system::Stacktrace> create(const std::vector<std::pair<std::string, std::string>>& settings);
-
-	Stacktrace(const std::vector<std::pair<std::string, std::string>>& settings);
+	Stacktrace(const esl::system::DefaultStacktraceFactory::Settings& settings);
 
 	void dump(std::ostream& stream) const override;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
+	void dump(esl::monitoring::Streams::Real& stream, esl::monitoring::Streams::Location location) const override;
 	void dumpFull(std::ostream& stream) const override;
-	void dumpFull(esl::logging::StreamReal& stream, esl::logging::Location location) const override;
+	void dumpFull(esl::monitoring::Streams::Real& stream, esl::monitoring::Streams::Location location) const override;
 	std::unique_ptr<esl::system::Stacktrace> clone() const override;
 
 private:
-	unsigned int skipEntries = 3;
-	bool showAddress = true;
-	bool showFunction = true;
+	esl::system::DefaultStacktraceFactory::Settings settings;
 
 	zsystem::Backtrace backtrace;
 
@@ -64,6 +62,7 @@ private:
 
 } /* namespace stacktrace */
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */
 
 #endif /* ZSYSTEM4ESL_STACKTRACE_STACKTRACE_H_ */

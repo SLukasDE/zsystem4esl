@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Plugin.h>
+#include <zsystem4esl/system/stacktrace/Stacktrace.h>
+#include <zsystem4esl/system/stacktrace/StacktraceFactory.h>
 
-#include <esl/plugin/Registry.h>
+namespace zsystem4esl {
+inline namespace v1_6 {
+namespace system {
+namespace stacktrace {
 
-extern "C" void esl__plugin__library__install(esl::plugin::Registry* registry, const char* data) {
-	if(registry != nullptr) {
-		zsystem4esl::Plugin::install(*registry, data);
-	}
+StacktraceFactory::StacktraceFactory(const esl::system::DefaultStacktraceFactory::Settings& aSettings)
+: settings(aSettings)
+{ }
+
+std::unique_ptr<esl::system::Stacktrace> StacktraceFactory::createStacktrace() {
+	return std::unique_ptr<esl::system::Stacktrace>(new Stacktrace(settings));
 }
+
+} /* namespace stacktrace */
+} /* namespace system */
+} /* inline namespace v1_6 */
+} /* namespace zsystem4esl */

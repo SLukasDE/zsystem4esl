@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ SOFTWARE.
 #include <zsystem/Signal.h>
 
 #include <esl/utility/String.h>
+
 #include <esl/system/Stacktrace.h>
 
 #include <condition_variable>
@@ -39,38 +40,13 @@ SOFTWARE.
 #include <thread>
 
 namespace zsystem4esl {
+inline namespace v1_6 {
 namespace system {
 namespace signal {
 
-std::unique_ptr<esl::system::Signal> Signal::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<esl::system::Signal>(new Signal(settings));
-}
-
-Signal::Signal(const std::vector<std::pair<std::string, std::string>>& settings) {
-	bool hasThreadedSignalHandler = false;
-
-    for(const auto& setting : settings) {
-		if(setting.first == "is-threaded") {
-			if(hasThreadedSignalHandler) {
-		        throw esl::system::Stacktrace::add(std::runtime_error("multiple definition of attribute 'is-threaded'."));
-			}
-			hasThreadedSignalHandler = true;
-			std::string value = esl::utility::String::toLower(setting.second);
-			if(value == "true") {
-				threadedSignalHandler = true;
-			}
-			else if(value == "false") {
-				threadedSignalHandler = false;
-			}
-			else {
-		    	throw esl::system::Stacktrace::add(std::runtime_error("Invalid value \"" + setting.second + "\" for attribute 'is-threaded'"));
-			}
-		}
-		else {
-	        throw esl::system::Stacktrace::add(std::runtime_error("unknown attribute '\"" + setting.first + "\"'."));
-		}
-    }
-}
+Signal::Signal(bool isThreadedSignalHandler)
+: threadedSignalHandler(isThreadedSignalHandler)
+{ }
 
 esl::system::Signal::Handler Signal::createHandler(const esl::utility::Signal& signal, std::function<void()> function) {
 	esl::system::Signal::Handler signalHandler;
@@ -140,4 +116,5 @@ esl::system::Signal::Handler Signal::createHandler(const esl::utility::Signal& s
 
 } /* namespace signal */
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */

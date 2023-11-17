@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <zsystem4esl/Plugin.h>
-#include <zsystem4esl/system/process/Process.h>
-#include <zsystem4esl/system/signal/Signal.h>
-#include <zsystem4esl/system/stacktrace/Stacktrace.h>
+#ifndef ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACEFACTORY_H_
+#define ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACEFACTORY_H_
 
-#include <esl/system/Process.h>
-#include <esl/system/Signal.h>
+#include <esl/system/DefaultStacktraceFactory.h>
 #include <esl/system/Stacktrace.h>
+#include <esl/system/StacktraceFactory.h>
 
 #include <memory>
 
 namespace zsystem4esl {
+inline namespace v1_6 {
+namespace system {
+namespace stacktrace {
 
-void Plugin::install(esl::plugin::Registry& registry, const char* data) {
-	esl::plugin::Registry::set(registry);
+class StacktraceFactory : public esl::system::StacktraceFactory {
+public:
+	StacktraceFactory(const esl::system::DefaultStacktraceFactory::Settings& settings);
 
-	registry.addPlugin<esl::system::Process>(
-			"zsystem4esl/system/process/Process",
-			&system::process::Process::create);
+    std::unique_ptr<esl::system::Stacktrace> createStacktrace() override;
 
-	registry.addPlugin<esl::system::Signal>(
-			"zsystem4esl/system/signal/Signal",
-			&system::signal::Signal::create);
+private:
+	esl::system::DefaultStacktraceFactory::Settings settings;
+};
 
-	registry.addPlugin<esl::system::Stacktrace>(
-			"zsystem4esl/system/stacktrace/Stacktrace",
-			&system::stacktrace::Stacktrace::create);
-}
-
+} /* namespace stacktrace */
+} /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */
+
+#endif /* ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACEFACTORY_H_ */

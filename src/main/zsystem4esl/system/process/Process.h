@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,13 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_
 #define ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_
 
-#include <esl/system/Process.h>
-#include <esl/system/Transceiver.h>
+#include <esl/object/Object.h>
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
-#include <esl/object/Object.h>
+#include <esl/system/FileDescriptor.h>
+#include <esl/system/Process.h>
+#include <esl/system/Transceiver.h>
+#include <esl/utility/Signal.h>
 
 #include <zsystem/Process.h>
 
@@ -39,13 +41,12 @@ SOFTWARE.
 #include <vector>
 
 namespace zsystem4esl {
+inline namespace v1_6 {
 namespace system {
 namespace process {
 
 class Process : public esl::system::Process {
 public:
-	static std::unique_ptr<esl::system::Process> create(const std::vector<std::pair<std::string, std::string>>& setting);
-
 	esl::system::Transceiver& operator[](const esl::system::FileDescriptor& fd) override;
 
 	void setWorkingDir(std::string workingDir) override;
@@ -73,6 +74,7 @@ private:
 
 } /* namespace process */
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */
 
 #endif /* ZSYSTEM4ESL_SYSTEM_PROCESS_PROCESS_H_ */

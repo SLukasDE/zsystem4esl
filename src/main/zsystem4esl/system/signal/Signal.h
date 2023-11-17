@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ SOFTWARE.
 #define ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 
 #include <esl/system/Signal.h>
+
 #include <esl/utility/Signal.h>
 #include <esl/object/Object.h>
 
@@ -34,27 +35,23 @@ SOFTWARE.
 #include <vector>
 
 namespace zsystem4esl {
+inline namespace v1_6 {
 namespace system {
 namespace signal {
 
 class Signal : public esl::system::Signal {
 public:
-	static std::unique_ptr<esl::system::Signal> create(const std::vector<std::pair<std::string, std::string>>& settings);
-
-	static inline const char* getImplementation() {
-		return "zsystem4esl";
-	}
-
-	Signal(const std::vector<std::pair<std::string, std::string>>& settings);
+	Signal(bool isThreadedSignalHandler = true);
 
 	esl::system::Signal::Handler createHandler(const esl::utility::Signal& signal, std::function<void()> function) override;
 
 private:
-	bool threadedSignalHandler = true;
+	bool threadedSignalHandler;
 };
 
 } /* namespace signal */
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */
 
 #endif /* ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_ */

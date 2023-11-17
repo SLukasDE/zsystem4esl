@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,63 +22,14 @@ SOFTWARE.
 
 #include <zsystem4esl/system/stacktrace/Stacktrace.h>
 
-#include <esl/utility/String.h>
-
-#include <stdexcept>
-
 namespace zsystem4esl {
+inline namespace v1_6 {
 namespace system {
 namespace stacktrace {
 
-namespace {
-bool convertValueToBool(const std::string& value) {
-	std::string normalized = esl::utility::String::toUpper(esl::utility::String::trim(value));
-	return (normalized != "" && normalized != "0" && normalized != "NO" && normalized != "FALSE");
-}
-}
-std::unique_ptr<esl::system::Stacktrace> Stacktrace::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<esl::system::Stacktrace>(new Stacktrace(settings));
-}
-
-Stacktrace::Stacktrace(const std::vector<std::pair<std::string, std::string>>& aSettings) {
-	bool hasSkipEntries = false;
-	bool hasShowAddress = false;
-	bool hasShowFunction = false;
-
-    for(const auto& setting : aSettings) {
-		if(setting.first == "skip-entries") {
-			if(hasSkipEntries) {
-	            throw std::runtime_error("zsystem4esl: multiple definition of attribute 'skip-entries'.");
-			}
-			hasSkipEntries = true;
-			int tmpSkipEntries = std::stoi(setting.second);
-			if(tmpSkipEntries < 0) {
-	            throw std::runtime_error("zsystem4esl: Invalid negative value \"" + std::to_string(tmpSkipEntries) + "\" for attribute 'skip-entries'.");
-			}
-			skipEntries = static_cast<unsigned int>(tmpSkipEntries);
-		}
-
-		else if(setting.first == "show-address") {
-			if(hasShowAddress) {
-	            throw std::runtime_error("zsystem4esl: multiple definition of attribute 'show-address'.");
-			}
-			hasShowAddress = true;
-			showAddress = convertValueToBool(setting.second);
-		}
-
-		else if(setting.first == "show-function") {
-			if(hasShowFunction) {
-	            throw std::runtime_error("zsystem4esl: multiple definition of attribute 'show-function'.");
-			}
-			hasShowFunction = true;
-			showFunction = convertValueToBool(setting.second);
-		}
-
-		else {
-            throw std::runtime_error("zsystem4esl: unknown attribute '\"" + setting.first + "\"'.");
-		}
-    }
-}
+Stacktrace::Stacktrace(const esl::system::DefaultStacktraceFactory::Settings& aSettings)
+: settings(aSettings)
+{ }
 
 void Stacktrace::dump(std::ostream& stream) const {
 	std::list<std::string> elements = createElementsReduced();
@@ -88,7 +39,7 @@ void Stacktrace::dump(std::ostream& stream) const {
 	}
 }
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
+void Stacktrace::dump(esl::monitoring::Streams::Real& stream, esl::monitoring::Streams::Location location) const {
 	std::list<std::string> elements = createElementsReduced();
 
 	for (const auto& entry : elements) {
@@ -103,7 +54,7 @@ void Stacktrace::dumpFull(std::ostream& stream) const {
 }
 
 
-void Stacktrace::dumpFull(esl::logging::StreamReal& stream, esl::logging::Location location) const {
+void Stacktrace::dumpFull(esl::monitoring::Streams::Real& stream, esl::monitoring::Streams::Location location) const {
 	for (const auto& entry : backtrace.getElements()) {
 		stream(location.object, location.function, location.file, location.line) << entry << "\n";
 	}
@@ -127,7 +78,7 @@ std::list<std::string> Stacktrace::createElementsReduced() const {
 	for(;rIter2 != backtrace.getElements().crend(); ++rIter2) {
 		elements.push_front(*rIter2);
 	}
-	for(unsigned int skipElements = skipEntries; skipElements > 0 && !elements.empty(); --skipElements) {
+	for(unsigned int skipElements = settings.skipEntries; skipElements > 0 && !elements.empty(); --skipElements) {
 		elements.pop_front();
 	}
 	return elements;
@@ -135,4 +86,5 @@ std::list<std::string> Stacktrace::createElementsReduced() const {
 
 } /* namespace stacktrace */
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */

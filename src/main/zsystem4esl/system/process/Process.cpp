@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ SOFTWARE.
 #include <zsystem4esl/system/process/Process.h>
 #include <zsystem4esl/system/process/Consumer.h>
 #include <zsystem4esl/system/process/Producer.h>
-#include <zsystem4esl/Logger.h>
 
 #include <zsystem/process/Arguments.h>
 #include <zsystem/process/Environment.h>
@@ -33,6 +32,8 @@ SOFTWARE.
 #include <zsystem/process/ProducerFile.h>
 #include <zsystem/Signal.h>
 
+#include <esl/Logger.h>
+
 #include <esl/io/Consumer.h>
 #include <esl/io/Producer.h>
 //#include <esl/system/stacktrace/IStacktrace.h>
@@ -41,15 +42,12 @@ SOFTWARE.
 
 
 namespace zsystem4esl {
+inline namespace v1_6 {
 namespace system {
 namespace process {
 
 namespace {
-Logger logger("zsystem4esl::system::Process");
-}
-
-std::unique_ptr<esl::system::Process> Process::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<esl::system::Process>(new Process);
+esl::Logger logger("zsystem4esl::system::Process");
 }
 
 esl::system::Transceiver& Process::operator[](const esl::system::FileDescriptor& fd) {
@@ -259,4 +257,5 @@ zsystem::Process::Handle Process::getHandle() const {
 
 } /* namespace process */
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace zsystem4esl */
