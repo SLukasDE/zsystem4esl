@@ -36,7 +36,6 @@ SOFTWARE.
 
 #include <esl/io/Consumer.h>
 #include <esl/io/Producer.h>
-//#include <esl/system/stacktrace/IStacktrace.h>
 
 #include <signal.h> // sigaction(), sigsuspend(), sig*()
 
@@ -186,61 +185,61 @@ int Process::execute(esl::system::Arguments arguments) const {
 	return rc;
 }
 
-void Process::sendSignal(const esl::utility::Signal& signal) const {
+void Process::sendSignal(const esl::system::Signal& signal) const {
 	zsystem::Process::Handle handle = getHandle();
 
 	if(handle == zsystem::Process::noHandle) {
 		return;
 	}
-	if(signal == esl::utility::Signal::Type::hangUp) {
+	if(signal == esl::system::Signal::Type::hangUp) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::hangUp);
 	}
-	else if(signal == esl::utility::Signal::Type::interrupt) {
+	else if(signal == esl::system::Signal::Type::interrupt) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::interrupt);
 	}
-	else if(signal == esl::utility::Signal::Type::quit) {
+	else if(signal == esl::system::Signal::Type::quit) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::quit);
 	}
-	else if(signal == esl::utility::Signal::Type::ill) {
+	else if(signal == esl::system::Signal::Type::ill) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::ill);
 	}
-	else if(signal == esl::utility::Signal::Type::trap) {
+	else if(signal == esl::system::Signal::Type::trap) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::trap);
 	}
-	else if(signal == esl::utility::Signal::Type::abort) {
+	else if(signal == esl::system::Signal::Type::abort) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::abort);
 	}
-	else if(signal == esl::utility::Signal::Type::busError) {
+	else if(signal == esl::system::Signal::Type::busError) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::busError);
 	}
-	else if(signal == esl::utility::Signal::Type::floatingPointException) {
+	else if(signal == esl::system::Signal::Type::floatingPointException) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::floatingPointException);
 	}
-	else if(signal == esl::utility::Signal::Type::segmentationViolation) {
+	else if(signal == esl::system::Signal::Type::segmentationViolation) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::segmentationViolation);
 	}
-	else if(signal == esl::utility::Signal::Type::user1) {
+	else if(signal == esl::system::Signal::Type::user1) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::user1);
 	}
-	else if(signal == esl::utility::Signal::Type::user2) {
+	else if(signal == esl::system::Signal::Type::user2) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::user2);
 	}
-	else if(signal == esl::utility::Signal::Type::alarm) {
+	else if(signal == esl::system::Signal::Type::alarm) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::alarm);
 	}
-	else if(signal == esl::utility::Signal::Type::child) {
+	else if(signal == esl::system::Signal::Type::child) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::child);
 	}
-	else if(signal == esl::utility::Signal::Type::stackFault) {
+	else if(signal == esl::system::Signal::Type::stackFault) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::stackFault);
 	}
-	else if(signal == esl::utility::Signal::Type::terminate) {
+	else if(signal == esl::system::Signal::Type::terminate) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::terminate);
 	}
-	else if(signal == esl::utility::Signal::Type::pipe) {
+	else if(signal == esl::system::Signal::Type::pipe) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::pipe);
 	}
-	else if(signal == esl::utility::Signal::Type::kill) {
+	else if(signal == esl::system::Signal::Type::kill) {
 		zsystem::Signal::sendSignal(handle, zsystem::Signal::Type::kill);
 	}
 }

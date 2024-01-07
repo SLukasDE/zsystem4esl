@@ -14,16 +14,16 @@ DefaultProcess::Settings::Settings(const std::vector<std::pair<std::string, std:
     }
 }
 
-DefaultProcess::DefaultProcess()
-: process(new zsystem4esl::system::process::Process)
-{ }
-
 DefaultProcess::DefaultProcess(const Settings& settings)
-: DefaultProcess()
+: process(createNative(settings))
 { }
 
 std::unique_ptr<Process> DefaultProcess::create(const std::vector<std::pair<std::string, std::string>>& settings) {
 	return std::unique_ptr<Process>(new DefaultProcess(Settings(settings)));
+}
+
+std::unique_ptr<Process> DefaultProcess::createNative(const Settings& settings) {
+	return std::unique_ptr<Process>(new zsystem4esl::system::process::Process);
 }
 
 Transceiver& DefaultProcess::operator[](const FileDescriptor& fd) {
@@ -50,7 +50,7 @@ int DefaultProcess::execute(Arguments arguments) const {
 	return process->execute(std::move(arguments));
 }
 
-void DefaultProcess::sendSignal(const utility::Signal& signal) const {
+void DefaultProcess::sendSignal(const Signal& signal) const {
 	process->sendSignal(signal);
 }
 

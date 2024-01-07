@@ -6,8 +6,8 @@
 #include <esl/system/Environment.h>
 #include <esl/system/FileDescriptor.h>
 #include <esl/system/Process.h>
+#include <esl/system/Signal.h>
 #include <esl/system/Transceiver.h>
-#include <esl/utility/Signal.h>
 
 #include <memory>
 #include <string>
@@ -25,10 +25,10 @@ public:
 		Settings(const std::vector<std::pair<std::string, std::string>>& settings);
 	};
 
-	DefaultProcess();
 	DefaultProcess(const Settings& settings);
 
 	static std::unique_ptr<Process> create(const std::vector<std::pair<std::string, std::string>>& settings);
+	static std::unique_ptr<Process> createNative(const Settings& settings = Settings());
 
 	Transceiver& operator[](const FileDescriptor& fd) override;
 
@@ -40,7 +40,7 @@ public:
 
 	int execute(Arguments arguments) const override;
 
-	void sendSignal(const utility::Signal& signal) const override;
+	void sendSignal(const Signal& signal) const override;
 	const void* getNativeHandle() const override;
 
 private:

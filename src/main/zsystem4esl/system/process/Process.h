@@ -28,8 +28,8 @@ SOFTWARE.
 #include <esl/system/Environment.h>
 #include <esl/system/FileDescriptor.h>
 #include <esl/system/Process.h>
+#include <esl/system/Signal.h>
 #include <esl/system/Transceiver.h>
-#include <esl/utility/Signal.h>
 
 #include <zsystem/Process.h>
 
@@ -57,7 +57,7 @@ public:
 
 	int execute(esl::system::Arguments arguments) const override;
 
-	void sendSignal(const esl::utility::Signal& signal) const override;
+	void sendSignal(const esl::system::Signal& signal) const override;
 	const void* getNativeHandle() const override;
 
 	zsystem::Process::Handle getHandle() const;
