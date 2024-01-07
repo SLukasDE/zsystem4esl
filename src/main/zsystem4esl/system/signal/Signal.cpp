@@ -26,9 +26,8 @@ SOFTWARE.
 
 #include <zsystem/Signal.h>
 
-#include <esl/utility/String.h>
-
 #include <esl/system/Stacktrace.h>
+#include <esl/utility/String.h>
 
 #include <condition_variable>
 #include <list>
@@ -44,60 +43,60 @@ inline namespace v1_6 {
 namespace system {
 namespace signal {
 
-Signal::Signal(bool isThreadedSignalHandler)
-: threadedSignalHandler(isThreadedSignalHandler)
+Signal::Signal(const esl::system::DefaultSignalManager::Settings& settings)
+: threadedSignalHandler(settings.isThreaded)
 { }
 
-esl::system::Signal::Handler Signal::createHandler(const esl::utility::Signal& signal, std::function<void()> function) {
-	esl::system::Signal::Handler signalHandler;
+esl::system::SignalManager::Handler Signal::createHandler(const esl::system::Signal& signal, std::function<void()> function) {
+	esl::system::SignalManager::Handler signalHandler;
 
 	zsystem::Signal::Type signalType = zsystem::Signal::Type::unknown;
-	if(signal == esl::utility::Signal::Type::hangUp) {
+	if(signal == esl::system::Signal::Type::hangUp) {
 		signalType = zsystem::Signal::Type::hangUp;
 	}
-	else if(signal == esl::utility::Signal::Type::interrupt) {
+	else if(signal == esl::system::Signal::Type::interrupt) {
 		signalType = zsystem::Signal::Type::interrupt;
 	}
-	else if(signal == esl::utility::Signal::Type::quit) {
+	else if(signal == esl::system::Signal::Type::quit) {
 		signalType = zsystem::Signal::Type::quit;
 	}
-	else if(signal == esl::utility::Signal::Type::ill) {
+	else if(signal == esl::system::Signal::Type::ill) {
 		signalType = zsystem::Signal::Type::ill;
 	}
-	else if(signal == esl::utility::Signal::Type::trap) {
+	else if(signal == esl::system::Signal::Type::trap) {
 		signalType = zsystem::Signal::Type::trap;
 	}
-	else if(signal == esl::utility::Signal::Type::abort) {
+	else if(signal == esl::system::Signal::Type::abort) {
 		signalType = zsystem::Signal::Type::abort;
 	}
-	else if(signal == esl::utility::Signal::Type::busError) {
+	else if(signal == esl::system::Signal::Type::busError) {
 		signalType = zsystem::Signal::Type::busError;
 	}
-	else if(signal == esl::utility::Signal::Type::floatingPointException) {
+	else if(signal == esl::system::Signal::Type::floatingPointException) {
 		signalType = zsystem::Signal::Type::floatingPointException;
 	}
-	else if(signal == esl::utility::Signal::Type::segmentationViolation) {
+	else if(signal == esl::system::Signal::Type::segmentationViolation) {
 		signalType = zsystem::Signal::Type::segmentationViolation;
 	}
-	else if(signal == esl::utility::Signal::Type::user1) {
+	else if(signal == esl::system::Signal::Type::user1) {
 		signalType = zsystem::Signal::Type::user1;
 	}
-	else if(signal == esl::utility::Signal::Type::user2) {
+	else if(signal == esl::system::Signal::Type::user2) {
 		signalType = zsystem::Signal::Type::user2;
 	}
-	else if(signal == esl::utility::Signal::Type::alarm) {
+	else if(signal == esl::system::Signal::Type::alarm) {
 		signalType = zsystem::Signal::Type::alarm;
 	}
-	else if(signal == esl::utility::Signal::Type::child) {
+	else if(signal == esl::system::Signal::Type::child) {
 		signalType = zsystem::Signal::Type::child;
 	}
-	else if(signal == esl::utility::Signal::Type::stackFault) {
+	else if(signal == esl::system::Signal::Type::stackFault) {
 		signalType = zsystem::Signal::Type::stackFault;
 	}
-	else if(signal == esl::utility::Signal::Type::terminate) {
+	else if(signal == esl::system::Signal::Type::terminate) {
 		signalType = zsystem::Signal::Type::terminate;
 	}
-	else if(signal == esl::utility::Signal::Type::pipe) {
+	else if(signal == esl::system::Signal::Type::pipe) {
 		signalType = zsystem::Signal::Type::pipe;
 	}
 	else {
@@ -105,10 +104,10 @@ esl::system::Signal::Handler Signal::createHandler(const esl::utility::Signal& s
 	}
 
 	if(threadedSignalHandler) {
-		signalHandler = esl::system::Signal::Handler(ThreadManager::installThreadHandler(function, signalType).release());
+		signalHandler = esl::system::SignalManager::Handler(ThreadManager::installThreadHandler(function, signalType).release());
 	}
 	else {
-		signalHandler = esl::system::Signal::Handler(new DirectHandler(function, signalType));
+		signalHandler = esl::system::SignalManager::Handler(new DirectHandler(function, signalType));
 	}
 
 	return signalHandler;

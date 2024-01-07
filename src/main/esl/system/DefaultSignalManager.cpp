@@ -1,4 +1,4 @@
-#include <esl/system/DefaultSignal.h>
+#include <esl/system/DefaultSignalManager.h>
 #include <esl/system/Stacktrace.h>
 #include <esl/utility/String.h>
 
@@ -8,7 +8,10 @@ namespace esl {
 inline namespace v1_6 {
 namespace system {
 
-DefaultSignal::Settings::Settings(const std::vector<std::pair<std::string, std::string>>& settings) {
+DefaultSignalManager::Settings::Settings() {
+}
+
+DefaultSignalManager::Settings::Settings(const std::vector<std::pair<std::string, std::string>>& settings) {
 	bool hasThreadedSignalHandler = false;
 
     for(const auto& setting : settings) {
@@ -34,16 +37,20 @@ DefaultSignal::Settings::Settings(const std::vector<std::pair<std::string, std::
     }
 }
 
-DefaultSignal::DefaultSignal(const Settings& settings)
-: signal(new zsystem4esl::system::signal::Signal(settings.isThreaded))
+DefaultSignalManager::DefaultSignalManager(const Settings& settings)
+: signalManager(createNative(settings))
 { }
 
-std::unique_ptr<Signal> DefaultSignal::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<Signal>(new DefaultSignal(Settings(settings)));
+std::unique_ptr<SignalManager> DefaultSignalManager::create(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<SignalManager>(new DefaultSignalManager(Settings(settings)));
 }
 
-DefaultSignal::Handler DefaultSignal::createHandler(const utility::Signal& aSignal, std::function<void()> function) {
-	return signal->createHandler(aSignal, function);
+std::unique_ptr<SignalManager> DefaultSignalManager::createNative(const Settings& settings) {
+	return std::unique_ptr<esl::system::SignalManager>(new zsystem4esl::system::signal::Signal(settings));
+}
+
+SignalManager::Handler DefaultSignalManager::createHandler(const Signal& aSignal, std::function<void()> function) {
+	return signalManager->createHandler(aSignal, function);
 }
 
 } /* namespace system */

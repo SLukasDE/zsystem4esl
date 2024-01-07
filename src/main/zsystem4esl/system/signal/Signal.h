@@ -23,10 +23,10 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 #define ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 
-#include <esl/system/Signal.h>
-
-#include <esl/utility/Signal.h>
 #include <esl/object/Object.h>
+#include <esl/system/DefaultSignalManager.h>
+#include <esl/system/Signal.h>
+#include <esl/system/SignalManager.h>
 
 #include <functional>
 #include <memory>
@@ -39,11 +39,11 @@ inline namespace v1_6 {
 namespace system {
 namespace signal {
 
-class Signal : public esl::system::Signal {
+class Signal : public esl::system::SignalManager {
 public:
-	Signal(bool isThreadedSignalHandler = true);
+	Signal(const esl::system::DefaultSignalManager::Settings& settings);
 
-	esl::system::Signal::Handler createHandler(const esl::utility::Signal& signal, std::function<void()> function) override;
+	esl::system::SignalManager::Handler createHandler(const esl::system::Signal& signal, std::function<void()> function) override;
 
 private:
 	bool threadedSignalHandler;

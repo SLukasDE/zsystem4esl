@@ -28,8 +28,6 @@ SOFTWARE.
 #include <zsystem/SignalHandler.h>
 #include <zsystem/Signal.h>
 
-#include <esl/utility/Signal.h>
-
 #include <functional>
 #include <list>
 #include <map>
