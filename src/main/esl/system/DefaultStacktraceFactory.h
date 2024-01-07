@@ -16,7 +16,7 @@ namespace system {
 class DefaultStacktraceFactory : public StacktraceFactory {
 public:
 	struct Settings {
-		Settings() = default;
+		Settings();
 		Settings(const std::vector<std::pair<std::string, std::string>>& settings);
 
 		unsigned int skipEntries = 3;
@@ -27,6 +27,7 @@ public:
 	DefaultStacktraceFactory(const Settings& settings);
 
 	static std::unique_ptr<StacktraceFactory> create(const std::vector<std::pair<std::string, std::string>>& settings);
+	static std::unique_ptr<StacktraceFactory> createNative(const Settings& settings = Settings());
 
     std::unique_ptr<Stacktrace> createStacktrace() override;
 
