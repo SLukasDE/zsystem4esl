@@ -109,7 +109,7 @@ int Process::execute(esl::system::Arguments arguments) const {
 			zystemParameterStream.consumer = zsystemConsumer.get();
 		}
 		else if(!transceiver.second.getInputPath().empty()) {
-			std::string path = transceiver.second.getInputPath().generic_string();
+			std::string path = transceiver.second.getInputPath();
 			logger.trace << "  - got input path: \"" << path << "\"\n";
 
 			std::unique_ptr<zsystem::process::ConsumerFile>& zsystemConsumerFile = pathToZSystemConsumerFile[path];
@@ -141,7 +141,7 @@ int Process::execute(esl::system::Arguments arguments) const {
 			zystemParameterStream.producer = zsystemProducer.get();
 		}
 		else if(!transceiver.second.getOutputPath().empty()) {
-			std::string path = transceiver.second.getOutputPath().generic_string();
+			std::string path = transceiver.second.getOutputPath();
 			logger.trace << "- got output path: \"" << path << "\"\n";
 
 			std::unique_ptr<zsystem::process::ProducerFile>& zsystemProducerFile = pathToZSystemProducerFile[path];
