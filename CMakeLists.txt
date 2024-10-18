@@ -16,7 +16,7 @@ include(Packages)
 option(COMPILE_UNITTESTS "Weather to compile unittests" ON)
 
 if(NOT ALL_IN_ONE_ESL) # always needed for unittests
-    #find_package_common4esl()
+    find_package_esl()
     find_package_zsystem()
 endif(NOT ALL_IN_ONE_ESL)
 
