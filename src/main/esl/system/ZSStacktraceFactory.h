@@ -1,5 +1,5 @@
-#ifndef ESL_SYSTEM_DEFAULTSTACKTRACEFACTORY_H_
-#define ESL_SYSTEM_DEFAULTSTACKTRACEFACTORY_H_
+#ifndef ESL_SYSTEM_ZSSTACKTRACEFACTORY_H_
+#define ESL_SYSTEM_ZSSTACKTRACEFACTORY_H_
 
 #include <esl/system/Stacktrace.h>
 #include <esl/system/StacktraceFactory.h>
@@ -13,7 +13,7 @@ namespace esl {
 inline namespace v1_6 {
 namespace system {
 
-class DefaultStacktraceFactory : public StacktraceFactory {
+class ZSStacktraceFactory : public StacktraceFactory {
 public:
 	struct Settings {
 		Settings();
@@ -24,7 +24,7 @@ public:
 		bool showFunction = true;
 	};
 
-	DefaultStacktraceFactory(const Settings& settings);
+	ZSStacktraceFactory(const Settings& settings);
 
 	static std::unique_ptr<StacktraceFactory> create(const std::vector<std::pair<std::string, std::string>>& settings);
 	static std::unique_ptr<StacktraceFactory> createNative(const Settings& settings = Settings());
@@ -39,4 +39,4 @@ private:
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_DEFAULTSTACKTRACEFACTORY_H_ */
+#endif /* ESL_SYSTEM_ZSSTACKTRACEFACTORY_H_ */

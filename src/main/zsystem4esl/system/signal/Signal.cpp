@@ -43,7 +43,7 @@ inline namespace v1_6 {
 namespace system {
 namespace signal {
 
-Signal::Signal(const esl::system::DefaultSignalManager::Settings& settings)
+Signal::Signal(const esl::system::ZSSignalManager::Settings& settings)
 : threadedSignalHandler(settings.isThreaded)
 { }
 

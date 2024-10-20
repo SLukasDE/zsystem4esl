@@ -27,7 +27,7 @@ inline namespace v1_6 {
 namespace system {
 namespace stacktrace {
 
-Stacktrace::Stacktrace(const esl::system::DefaultStacktraceFactory::Settings& aSettings)
+Stacktrace::Stacktrace(const esl::system::ZSStacktraceFactory::Settings& aSettings)
 : settings(aSettings)
 { }
 

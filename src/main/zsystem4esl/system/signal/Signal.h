@@ -24,9 +24,9 @@ SOFTWARE.
 #define ZSYSTEM4ESL_SYSTEM_SIGNAL_SIGNAL_H_
 
 #include <esl/object/Object.h>
-#include <esl/system/DefaultSignalManager.h>
 #include <esl/system/Signal.h>
 #include <esl/system/SignalManager.h>
+#include <esl/system/ZSSignalManager.h>
 
 #include <functional>
 #include <memory>
@@ -41,7 +41,7 @@ namespace signal {
 
 class Signal : public esl::system::SignalManager {
 public:
-	Signal(const esl::system::DefaultSignalManager::Settings& settings);
+	Signal(const esl::system::ZSSignalManager::Settings& settings);
 
 	esl::system::SignalManager::Handler createHandler(const esl::system::Signal& signal, std::function<void()> function) override;
 

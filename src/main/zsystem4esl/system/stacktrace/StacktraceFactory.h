@@ -23,9 +23,9 @@ SOFTWARE.
 #ifndef ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACEFACTORY_H_
 #define ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACEFACTORY_H_
 
-#include <esl/system/DefaultStacktraceFactory.h>
 #include <esl/system/Stacktrace.h>
 #include <esl/system/StacktraceFactory.h>
+#include <esl/system/ZSStacktraceFactory.h>
 
 #include <memory>
 
@@ -36,12 +36,12 @@ namespace stacktrace {
 
 class StacktraceFactory : public esl::system::StacktraceFactory {
 public:
-	StacktraceFactory(const esl::system::DefaultStacktraceFactory::Settings& settings);
+	StacktraceFactory(const esl::system::ZSStacktraceFactory::Settings& settings);
 
     std::unique_ptr<esl::system::Stacktrace> createStacktrace() override;
 
 private:
-	esl::system::DefaultStacktraceFactory::Settings settings;
+	esl::system::ZSStacktraceFactory::Settings settings;
 };
 
 } /* namespace stacktrace */

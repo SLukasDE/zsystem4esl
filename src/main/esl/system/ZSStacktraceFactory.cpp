@@ -1,4 +1,4 @@
-#include <esl/system/DefaultStacktraceFactory.h>
+#include <esl/system/ZSStacktraceFactory.h>
 #include <esl/utility/String.h>
 
 #include <zsystem4esl/system/stacktrace/StacktraceFactory.h>
@@ -9,10 +9,10 @@ namespace esl {
 inline namespace v1_6 {
 namespace system {
 
-DefaultStacktraceFactory::Settings::Settings() {
+ZSStacktraceFactory::Settings::Settings() {
 }
 
-DefaultStacktraceFactory::Settings::Settings(const std::vector<std::pair<std::string, std::string>>& settings) {
+ZSStacktraceFactory::Settings::Settings(const std::vector<std::pair<std::string, std::string>>& settings) {
 	bool hasSkipEntries = false;
 	bool hasShowAddress = false;
 	bool hasShowFunction = false;
@@ -51,19 +51,19 @@ DefaultStacktraceFactory::Settings::Settings(const std::vector<std::pair<std::st
     }
 };
 
-DefaultStacktraceFactory::DefaultStacktraceFactory(const Settings& settings)
+ZSStacktraceFactory::ZSStacktraceFactory(const Settings& settings)
 : stacktraceFactory(createNative(settings))
 { }
 
-std::unique_ptr<StacktraceFactory> DefaultStacktraceFactory::create(const std::vector<std::pair<std::string, std::string>>& settings) {
-	return std::unique_ptr<StacktraceFactory>(new DefaultStacktraceFactory(Settings(settings)));
+std::unique_ptr<StacktraceFactory> ZSStacktraceFactory::create(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<StacktraceFactory>(new ZSStacktraceFactory(Settings(settings)));
 }
 
-std::unique_ptr<StacktraceFactory> DefaultStacktraceFactory::createNative(const Settings& settings) {
+std::unique_ptr<StacktraceFactory> ZSStacktraceFactory::createNative(const Settings& settings) {
 	return std::unique_ptr<esl::system::StacktraceFactory>(new zsystem4esl::system::stacktrace::StacktraceFactory(settings));
 }
 
-std::unique_ptr<Stacktrace> DefaultStacktraceFactory::createStacktrace() {
+std::unique_ptr<Stacktrace> ZSStacktraceFactory::createStacktrace() {
 	return stacktraceFactory->createStacktrace();
 }
 

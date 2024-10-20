@@ -1,5 +1,5 @@
-#ifndef ESL_SYSTEM_DEFAULTSIGNALMANAGER_H_
-#define ESL_SYSTEM_DEFAULTSIGNALMANAGER_H_
+#ifndef ESL_SYSTEM_ZSSIGNALMANAGER_H_
+#define ESL_SYSTEM_ZSSIGNALMANAGER_H_
 
 #include <esl/system/Signal.h>
 #include <esl/system/SignalManager.h>
@@ -14,7 +14,7 @@ namespace esl {
 inline namespace v1_6 {
 namespace system {
 
-class DefaultSignalManager : public SignalManager {
+class ZSSignalManager : public SignalManager {
 public:
 	struct Settings {
 		Settings();
@@ -23,7 +23,7 @@ public:
 		bool isThreaded = true;
 	};
 
-	DefaultSignalManager(const Settings& settings);
+	ZSSignalManager(const Settings& settings);
 
 	static std::unique_ptr<SignalManager> create(const std::vector<std::pair<std::string, std::string>>& settings);
 	static std::unique_ptr<SignalManager> createNative(const Settings& settings = Settings());
@@ -38,4 +38,4 @@ private:
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_DEFAULTSIGNALMANAGER_H_ */
+#endif /* ESL_SYSTEM_ZSSIGNALMANAGER_H_ */

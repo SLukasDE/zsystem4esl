@@ -24,9 +24,9 @@ SOFTWARE.
 #define ZSYSTEM4ESL_SYSTEM_STACKTRACE_STACKTRACE_H_
 
 #include <esl/monitoring/Streams.h>
-#include <esl/system/DefaultStacktraceFactory.h>
 #include <esl/system/Stacktrace.h>
 #include <esl/system/StacktraceFactory.h>
+#include <esl/system/ZSStacktraceFactory.h>
 
 #include <zsystem/Backtrace.h>
 
@@ -44,7 +44,7 @@ namespace stacktrace {
 
 class Stacktrace : public esl::system::Stacktrace {
 public:
-	Stacktrace(const esl::system::DefaultStacktraceFactory::Settings& settings);
+	Stacktrace(const esl::system::ZSStacktraceFactory::Settings& settings);
 
 	void dump(std::ostream& stream) const override;
 	void dump(esl::monitoring::Streams::Real& stream, esl::monitoring::Streams::Location location) const override;
@@ -53,7 +53,7 @@ public:
 	std::unique_ptr<esl::system::Stacktrace> clone() const override;
 
 private:
-	esl::system::DefaultStacktraceFactory::Settings settings;
+	esl::system::ZSStacktraceFactory::Settings settings;
 
 	zsystem::Backtrace backtrace;
 
