@@ -51,7 +51,7 @@ std::unique_ptr<ThreadHandler> ThreadManager::installThreadHandler(std::function
 
 	std::lock_guard<std::mutex> lockRegistryMutex(instance->registryMutex);
 
-	auto registryInsertResult = instance->registry.insert(std::make_pair(signalType, std::pair<zsystem::SignalHandler::Handle, std::set<ThreadHandler*>>(zsystem::SignalHandler::Handle(), {})));
+	auto registryInsertResult = instance->registry.insert(std::make_pair(signalType, std::pair<zsystem::SignalHandler::Handle, std::set<ThreadHandler*>>(zsystem::SignalHandler::Handle(), std::set<ThreadHandler*>{})));
 	if(registryInsertResult.second == true) {
 		registryInsertResult.first->second.first = zsystem::SignalHandler::install(signalType, [signalType]{signalHandler(signalType);});
 	}
